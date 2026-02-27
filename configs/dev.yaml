@@ -1,0 +1,7 @@
+base_url: "https://dev.signainsights.com"
+
+browser: "chromium"
+headless: false
+
+default_timeout: 30000
+navigation_timeout: 45000

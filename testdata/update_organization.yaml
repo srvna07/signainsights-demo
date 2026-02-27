@@ -1,0 +1,15 @@
+updated_basic:
+  name: "UpdatedOrg_"
+  franchise_id: "UpdatedTest"
+  
+
+contact:
+  phone: "+91 9867543712"
+  mobile: "+91 9867543713"
+  address1: "TestUpdated"
+  address2: "TestUpdated"
+  country: "TestUpdated"
+  city: "TestUpdated"
+  state: "TestUpdated"
+  zip_code: "600300"
+  web_address: "www.testupdated.com"

@@ -1,0 +1,16 @@
+# IDE
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Test output
+screenshots/
+reports/
+
+# Environment (contains credentials — never commit)
+.env

@@ -1,0 +1,9 @@
+new_report:
+  report_name: Test_Report_20260225114125
+  menu_name: Test_Menu_477C
+  work_space_id: 500b7956-e39e-4ff3-981f-8d66c9ab364e
+  report_id: fcb552da-232b-44c0-b736-45820ec61f7f
+  dataset_id: c5e28aa6-52c7-400b-8f81-9611dbc3f6cc
+
+edit_report:
+  report_name: Test_Edited_Report_20260225114125
