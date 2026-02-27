@@ -126,3 +126,5 @@ class OrganizationsPage(BasePage):
     def verify_organization_not_in_table(self, org_name: str):
         self.search_organization(org_name)
         expect(self.page.get_by_role("cell", name=org_name).first).not_to_be_visible()
+
+
