@@ -1,7 +1,7 @@
 updated_basic:
-  name: "UpdatedOrg_"
-  franchise_id: "UpdatedTest"
-  
+  name: "test_UpdatedOrg_"
+  franchise_id: "test_UpdatedOrg"
+
 
 contact:
   phone: "+91 9867543712"

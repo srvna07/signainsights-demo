@@ -1,6 +1,6 @@
 organization:
-  namePrefix: Org_C9VS8
-  franchise_id: Test
+  namePrefix: "test_org"
+  franchise_id: test_org
 contact:
   phone: +91 9867543710
   mobile: +91 9867543711

@@ -1,7 +1,7 @@
 user:
   firstName: "Testing"
   lastName: "User"
-  usernamePrefix: "auto_user_"
+  usernamePrefix: "test_user"
   emailDomain: "@gmail.com"
 
 role: "Admin"
