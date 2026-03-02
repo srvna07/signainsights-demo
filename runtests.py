@@ -8,6 +8,7 @@ test_suite = [
     "tests/test_newOrganization.py",
     "tests/test_report_registration.py",
     "tests/test_reportvisibilityRBAC.py",
+    "tests/test_dashboardReportVisibility.py",
     "tests/test_super_admin.py",
     "tests/test_signa_user.py",
 

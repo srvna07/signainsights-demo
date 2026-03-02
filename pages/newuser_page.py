@@ -65,6 +65,8 @@ class NewUserPage(BasePage):
     def select_organization(self, org_name: str):
         self.organization_dropdown.click()
         self.page.get_by_role("option", name=org_name, exact=True).click()
+        # Close dropdown after selection
+        self.organization_dropdown.click()
 
     def select_user_type(self, user_type: str):
         self.user_type_dropdown.click()
@@ -150,6 +152,8 @@ class NewUserPage(BasePage):
         expect(self.success_message).to_be_visible(timeout=10000)
 
     def verify_update_success(self):
+        self.page.keyboard.press("Escape")
+        self.update_btn.click()
         expect(self.update_success_message).to_be_visible(timeout=10000)
 
     def verify_delete_success(self):

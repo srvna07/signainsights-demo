@@ -27,28 +27,60 @@ def config_fixture():
 
 
 @pytest.fixture(scope="session")
-def page():
+def browser():
+    """Launch browser once per test session."""
     with sync_playwright() as p:
         browser = getattr(p, config["browser"]).launch(
             headless=config["headless"],
             args=["--start-maximized"]
         )
-        context = browser.new_context(no_viewport=True)
-        pg = context.new_page()
-        pg.set_default_timeout(config["default_timeout"])
-        pg.set_default_navigation_timeout(config["navigation_timeout"])
-        logger.info(f"ENV={ENV} | URL={config['base_url']} | Browser={config['browser']}")
-        yield pg
-        context.close()
+
+        logger.info(f"ENV: {ENV} | Base URL: {config['base_url']}")
+        logger.info(f"Browser: {config['browser']} | Headless: {config['headless']}")
+
+        yield browser
         browser.close()
+@pytest.fixture(scope="session")
+def page(browser):
+    """Single shared page for normal tests."""
+    context = browser.new_context(no_viewport=True)
+    page = context.new_page()
 
+    page.set_default_timeout(config["default_timeout"])
+    page.set_default_navigation_timeout(config["navigation_timeout"])
 
+    yield page
+    context.close()
+
+@pytest.fixture
+def fresh_context(browser):
+    """Fresh context for multi-user tests."""
+    context = browser.new_context(no_viewport=True)
+    page = context.new_page()
+
+    page.set_default_timeout(config["default_timeout"])
+    page.set_default_navigation_timeout(config["navigation_timeout"])
+
+    yield page
+    context.close()
 @pytest.fixture(scope="session")
 def authenticated_page(page):
+    """Logs in once and reuses the session for all 50 tests."""
+    
     login = LoginPage(page)
     login.navigate(config["base_url"])
+    # Uses Environment Variables for security
     login.login(os.getenv("USERNAME"), os.getenv("PASSWORD"))
-    logger.info("Session authenticated.")
+    logger.info("✓ Session authenticated. Reusing for all tests.")
+    return page
+
+@pytest.fixture
+def existing_user_page(fresh_context):
+    """Logs in as existing normal user in separate session."""
+    page = fresh_context
+    login = LoginPage(page)
+    login.navigate(config["base_url"])
+    login.login(os.getenv("SECOND_USER"), os.getenv("SECOND_PASSWORD"))
     return page
 
 
@@ -75,6 +107,11 @@ def new_organization_page(page):
 @pytest.fixture
 def report_registration_page(page):
     return ReportRegistrationPage(page)
+
+@pytest.fixture
+def dashboard_page(page): 
+    return DashboardPage(page)
+
 
 
 @pytest.fixture(scope="session")
@@ -143,3 +180,7 @@ def pytest_runtest_makereport(item, call):
             filename  = f"{item.name.replace('/', '_')}_{timestamp}.png"
             pg.screenshot(path=str(screenshots_dir / filename), full_page=True)
             print(f"\n Screenshot: {filename}")
+
+@pytest.fixture(scope="session")
+def env():
+    return ENV

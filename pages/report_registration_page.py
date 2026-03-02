@@ -12,6 +12,7 @@ class ReportRegistrationPage(BasePage):
         self.rows_per_page  = page.get_by_role("combobox", name="Rows per page:")
         self.next_page_btn  = page.get_by_role("button", name="Go to next page")
         self.prev_page_btn  = page.get_by_role("button", name="Go to previous page")
+        self.update_success_message = page.get_by_text("Report updated successfully")
 
     def _dialog(self) -> Locator:
         return self.page.get_by_role("dialog")
@@ -63,6 +64,9 @@ class ReportRegistrationPage(BasePage):
 
     def fill_dataset_id(self, value: str):
         self._dialog().get_by_label("DatasetId *").fill(value)
+
+    def dashboard_checkbox(self):
+        return self._dialog().get_by_role("checkbox", name = "Do you want this report to be shown as a Dashboard?")
 
     def select_role(self, *role_names: str):
         self.page.get_by_role("combobox", name="Role").click()
@@ -118,3 +122,12 @@ class ReportRegistrationPage(BasePage):
 
     def verify_search_result(self, report_name: str):
         expect(self.page.get_by_text(report_name).first).to_be_visible()
+
+    def dashboard_checkbox_is_checked(self):
+        checkbox = self.dashboard_checkbox()
+        checkbox.click()
+
+    def verify_update_success(self):
+        """Verify the update success toast is visible."""
+        expect(self.update_success_message).to_be_visible()
+    
