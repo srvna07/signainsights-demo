@@ -117,7 +117,7 @@ def dashboard_page(page):
 @pytest.fixture(scope="session")
 def new_user_data():
     data   = DataReader.load_yaml("testdata/new_user.yaml")
-    prefix = data["user"]["usernamePrefix"]
+    prefix = data["user"]["usernamePrefix"] + "_"
     data["user"]["username"] = DataFactory.random_username(prefix)
     data["user"]["email"]    = DataFactory.random_email(prefix, data["user"]["emailDomain"])
     return data
@@ -126,8 +126,8 @@ def new_user_data():
 @pytest.fixture(scope="session")
 def new_organization_data():
     data = DataReader.load_yaml("testdata/new_organization.yaml")
-    data["organization"]["namePrefix"]   = DataFactory.random_org_name(data["organization"]["namePrefix"])
-    data["organization"]["franchise_id"] = DataFactory.random_string()
+    data["organization"]["namePrefix"]   = DataFactory.random_org_name(data["organization"]["namePrefix"] + "_")
+    data["organization"]["franchise_id"] = data["organization"]["franchise_id"] + "_" + DataFactory.random_string()
     return data
 
 
@@ -137,7 +137,7 @@ def report_registration_data():
     org_data    = DataReader.load_yaml("testdata/new_organization.yaml")
     report_data["new_report"]["report_name"]  = DataFactory.generate_report_name()
     report_data["new_report"]["menu_name"]    = DataFactory.generate_menu_name()
-    report_data["edit_report"]["report_name"] = DataFactory.generate_report_name("Edited_Report")
+    report_data["edit_report"]["report_name"] = DataFactory.generate_report_name("test_edited_report")
     report_data["organization"]               = org_data["organization"]
     return report_data
 
