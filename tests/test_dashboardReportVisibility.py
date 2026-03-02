@@ -31,7 +31,7 @@ def create_new_organization(authenticated_page, new_organization_page, new_organ
     return org["namePrefix"]
 
 @pytest.fixture
-def create_new_report(authenticated_page, report_registration_page: ReportRegistrationPageActions, report_registration_data, new_organization_data):
+def create_new_report(authenticated_page, report_registration_page, report_registration_data, new_organization_data):
     # Use 'report_registration_data' for everything to stay consistent
     new_report = report_registration_data["new_report"]
     org    = new_organization_data["organization"]
