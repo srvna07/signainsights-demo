@@ -2,6 +2,7 @@ import pytest
 
 test_suite = [
     "tests/test_get_token.py",
+    "tests/test_login.py",
     "tests/test_forgot_password.py",
     "tests/test_landing.py",
     "tests/test_newuser.py",
