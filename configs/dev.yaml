@@ -1,4 +1,5 @@
 base_url: "https://dev.signainsights.com"
+apiUrl: "https://devapiv2.signainsights.com"
 
 browser: "chromium"
 headless: false

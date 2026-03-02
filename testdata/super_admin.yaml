@@ -1,7 +1,7 @@
 super_admin_user:
   firstName: "Super"
   lastName: "Admin"
-  usernamePrefix: "auto_sa_"
+  usernamePrefix: "test_sa_"
   emailDomain: "@gmail.com"
   role: "Admin"
   organization: "SignaTech"
@@ -20,7 +20,7 @@ users_to_create:
   signa_user:
     firstName: "Signa"
     lastName: "User"
-    usernamePrefix: "auto_signa_"
+    usernamePrefix: "test_signa_"
     emailDomain: "@gmail.com"
     role: "Admin"
     organization: "SignaTech"
@@ -38,7 +38,7 @@ users_to_create:
   org_admin:
     firstName: "Organization"
     lastName: "Admin"
-    usernamePrefix: "auto_orgadmin_"
+    usernamePrefix: "test_orgadmin_"
     emailDomain: "@gmail.com"
     role: "Admin"
     organization: "SignaTech"
@@ -56,7 +56,7 @@ users_to_create:
   org_user:
     firstName: "Organization"
     lastName: "User"
-    usernamePrefix: "auto_orguser_"
+    usernamePrefix: "test_orguser_"
     emailDomain: "@gmail.com"
     role: "Admin"
     organization: "SignaTech"
@@ -74,7 +74,7 @@ users_to_create:
 target_user_for_modification:
   firstName: "Target"
   lastName: "User"
-  usernamePrefix: "auto_target_"
+  usernamePrefix: "test_target_"
   emailDomain: "@gmail.com"
   role: "Admin"
   organization: "SignaTech"

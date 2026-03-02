@@ -9,25 +9,25 @@ from pages.newuser_page import NewUserPage
 
 @pytest.fixture(scope="session")
 def signa_org_name():
-    return DataFactory.random_org_name("Signa_Org_")
+    return DataFactory.random_org_name("test_signa_org_")
 
 
 @pytest.fixture(scope="session")
 def signa_user_names():
     domain = DataReader.load_yaml("testdata/new_user.yaml")["user"]["emailDomain"]
     return {
-        "signa":     {"username": DataFactory.random_username("signa_"),    "email": DataFactory.random_email("signa_",    domain)},
-        "org_admin": {"username": DataFactory.random_username("orgadmin_"), "email": DataFactory.random_email("orgadmin_", domain)},
-        "org_user":  {"username": DataFactory.random_username("orguser_"),  "email": DataFactory.random_email("orguser_",  domain)},
+        "signa":     {"username": DataFactory.random_username("test_signa_"),     "email": DataFactory.random_email("test_signa_",     domain)},
+        "org_admin": {"username": DataFactory.random_username("test_orgadmin_"),  "email": DataFactory.random_email("test_orgadmin_",  domain)},
+        "org_user":  {"username": DataFactory.random_username("test_orguser_"),   "email": DataFactory.random_email("test_orguser_",   domain)},
     }
 
 
 @pytest.fixture(scope="session")
 def signa_report_data():
     return {
-        "report_name": DataFactory.generate_report_name("Signa_Report"),
-        "menu_name":   DataFactory.generate_menu_name("Signa_Menu"),
-        "edit_name":   DataFactory.generate_report_name("Signa_Edited_Report"),
+        "report_name": DataFactory.generate_report_name("test_signa_report"),
+        "menu_name":   DataFactory.generate_menu_name("test_signa_menu"),
+        "edit_name":   DataFactory.generate_report_name("test_signa_edited_report"),
     }
 
 
@@ -207,3 +207,4 @@ def test_signa_user_cannot_access_super_admin(signa_users_page):
     signa_users_page.user_management_btn.click()
     signa_users_page.search_user(sa_username)
     signa_users_page.verify_user_not_in_table(sa_username)
+
