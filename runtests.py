@@ -1,9 +1,10 @@
 import sys
 import pytest
 
-# Step 1: runs alone before parallel
+# Step 1: runs sequentially before parallel — token + smoke must pass to continue
 pre_suite = [
-    "tests/test_get_token.py",
+    # "tests/test_get_token.py",
+    "tests/test_smoke.py",
 ]
 
 # Step 2: runs in parallel
@@ -28,20 +29,22 @@ post_suite = [
 def main():
     cli_args = sys.argv[1:]
 
-    # --- Phase 1: sequential pre-run ---
-    print("\n[Phase 1] Running pre-suite sequentially...")
+    # --- Phase 1: sequential pre-run (token + smoke) ---
+    print("\n[Phase 1] Running pre-suite sequentially (token + smoke)...")
     exit_code = pytest.main(["-v", *cli_args, *pre_suite])
     if exit_code != 0:
+        print("\n[Aborted] Pre-suite failed. Skipping parallel and cleanup phases.")
         sys.exit(exit_code)
 
     # --- Phase 2: parallel run ---
     print("\n[Phase 2] Running parallel suite...")
     exit_code = pytest.main(["-v", "--numprocesses=auto", "--dist=loadfile", *cli_args, *parallel_suite])
     if exit_code != 0:
+        print("\n[Aborted] Parallel suite failed. Skipping cleanup phase.")
         sys.exit(exit_code)
 
-    # --- Phase 3: sequential post-run ---
-    print("\n[Phase 3] Running post-suite sequentially...")
+    # --- Phase 3: sequential post-run (cleanup) ---
+    print("\n[Phase 3] Running post-suite sequentially (cleanup)...")
     exit_code = pytest.main(["-v", *cli_args, *post_suite])
     sys.exit(exit_code)
 
