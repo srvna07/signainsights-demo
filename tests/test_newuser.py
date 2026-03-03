@@ -1,6 +1,7 @@
 import pytest
 
 
+# Verify user can be created successfully and appears in table
 @pytest.mark.smoke
 def test_create_new_user(authenticated_page, new_user_page, new_user_data, config_fixture):
     page    = new_user_page
@@ -21,8 +22,9 @@ def test_create_new_user(authenticated_page, new_user_page, new_user_data, confi
     page.verify_user_in_table(user["username"])
 
 
+# Verify user can be edited successfully
 @pytest.mark.smoke
-def test_edit_user(authenticated_page, new_user_page, new_user_data, update_user_data):
+def test_edit_user_updates_user(authenticated_page, new_user_page, new_user_data, update_user_data):
     page     = new_user_page
     username = new_user_data["user"]["username"]
 
@@ -34,8 +36,9 @@ def test_edit_user(authenticated_page, new_user_page, new_user_data, update_user
     page.verify_update_success()
 
 
+# Verify user can be deleted successfully and is removed from table
 @pytest.mark.smoke
-def test_delete_user(authenticated_page, new_user_page, new_user_data, config_fixture):
+def test_delete_user_removes_from_table(authenticated_page, new_user_page, new_user_data, config_fixture):
     page     = new_user_page
     username = new_user_data["user"]["username"]
 

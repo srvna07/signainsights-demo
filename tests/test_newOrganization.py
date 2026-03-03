@@ -1,8 +1,9 @@
 import pytest
 
 
+# Verify organization can be created successfully
 @pytest.mark.smoke
-def test_create_organization(authenticated_page, new_organization_page, new_organization_data):
+def test_create_organization_success(authenticated_page, new_organization_page, new_organization_data):
     page    = new_organization_page
     org     = new_organization_data["organization"]
     contact = new_organization_data["contact"]
@@ -15,8 +16,9 @@ def test_create_organization(authenticated_page, new_organization_page, new_orga
     page.verify_success()
 
 
+# Verify duplicate organization shows error
 @pytest.mark.smoke
-def test_create_duplicate_organization(authenticated_page, new_organization_page, new_organization_data):
+def test_create_duplicate_organization_shows_error(authenticated_page, new_organization_page, new_organization_data):
     page    = new_organization_page
     org     = new_organization_data["organization"]
     contact = new_organization_data["contact"]
@@ -30,8 +32,9 @@ def test_create_duplicate_organization(authenticated_page, new_organization_page
     page.cancel_btn.click()
 
 
-def test_edit_organization(authenticated_page, new_organization_page, new_organization_data,
-                           update_organization_data, config_fixture):
+# Verify organization can be edited successfully
+def test_edit_organization_updates(authenticated_page, new_organization_page, new_organization_data,
+                                   update_organization_data, config_fixture):
     page     = new_organization_page
     org_name = new_organization_data["organization"]["namePrefix"]
 
@@ -45,9 +48,10 @@ def test_edit_organization(authenticated_page, new_organization_page, new_organi
     page.verify_organization_in_table(update_organization_data["updated_basic"]["name"])
 
 
+# Verify organization can be deleted successfully
 @pytest.mark.smoke
-def test_delete_organization(authenticated_page, new_organization_page, update_organization_data,
-                             config_fixture):
+def test_delete_organization_success(authenticated_page, new_organization_page, update_organization_data,
+                                     config_fixture):
     page     = new_organization_page
     org_name = update_organization_data["updated_basic"]["name"]
 

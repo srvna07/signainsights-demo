@@ -2,8 +2,9 @@ import pytest
 from playwright.sync_api import expect
 
 
+# Verify organization can be created for report registration
 @pytest.mark.smoke
-def test_create_organization_for_report(authenticated_page, new_organization_page, new_organization_data):
+def test_create_organization_for_report_registration(authenticated_page, new_organization_page, new_organization_data):
     org     = new_organization_data["organization"]
     contact = new_organization_data["contact"]
 
@@ -15,8 +16,9 @@ def test_create_organization_for_report(authenticated_page, new_organization_pag
     new_organization_page.verify_success()
 
 
+# Verify report can be created successfully
 @pytest.mark.smoke
-def test_create_report(authenticated_page, report_registration_page, report_registration_data, new_organization_data):
+def test_create_report_success(authenticated_page, report_registration_page, report_registration_data, new_organization_data):
     new_report = report_registration_data["new_report"]
     org_name   = new_organization_data["organization"]["namePrefix"]
 
@@ -32,8 +34,9 @@ def test_create_report(authenticated_page, report_registration_page, report_regi
     report_registration_page.verify_report_visible(new_report["report_name"])
 
 
+# Verify report can be edited successfully
 @pytest.mark.smoke
-def test_edit_report(authenticated_page, report_registration_page, report_registration_data):
+def test_edit_report_success(authenticated_page, report_registration_page, report_registration_data):
     new_report  = report_registration_data["new_report"]
     edit_report = report_registration_data["edit_report"]
 
@@ -47,8 +50,9 @@ def test_edit_report(authenticated_page, report_registration_page, report_regist
     report_registration_page.verify_report_visible(edit_report["report_name"])
 
 
+# Verify report search functionality works
 @pytest.mark.smoke
-def test_search_report(authenticated_page, report_registration_page, report_registration_data):
+def test_search_report_returns_expected_result(authenticated_page, report_registration_page, report_registration_data):
     report_name = report_registration_data["edit_report"]["report_name"]
 
     report_registration_page.navigate_to()
@@ -57,6 +61,7 @@ def test_search_report(authenticated_page, report_registration_page, report_regi
     report_registration_page.clear_search()
 
 
+# Verify table displays maximum 5 rows per page
 def test_rows_per_page_5(authenticated_page, report_registration_page):
     report_registration_page.navigate_to()
     report_registration_page.set_rows_per_page(5)
@@ -65,6 +70,7 @@ def test_rows_per_page_5(authenticated_page, report_registration_page):
     assert rows.count() <= 5
 
 
+# Verify table displays maximum 25 rows per page
 def test_rows_per_page_25(authenticated_page, report_registration_page):
     report_registration_page.navigate_to()
     report_registration_page.set_rows_per_page(25)
@@ -72,7 +78,8 @@ def test_rows_per_page_25(authenticated_page, report_registration_page):
     assert rows.count() <= 25
 
 
-def test_pagination(authenticated_page, report_registration_page):
+# Verify pagination navigation works correctly
+def test_pagination_navigation(authenticated_page, report_registration_page):
     report_registration_page.navigate_to()
     first_row_text = authenticated_page.locator("table tbody tr").first.text_content()
 
@@ -83,16 +90,18 @@ def test_pagination(authenticated_page, report_registration_page):
     expect(authenticated_page.locator("table tbody tr").first).to_have_text(first_row_text)
 
 
+# Verify report can be deleted successfully
 @pytest.mark.smoke
-def test_delete_report(authenticated_page, report_registration_page, report_registration_data):
+def test_delete_report_success(authenticated_page, report_registration_page, report_registration_data):
     report_name = report_registration_data["edit_report"]["report_name"]
     report_registration_page.navigate_to()
     report_registration_page.delete_report(report_name)
     report_registration_page.verify_report_not_visible(report_name)
 
 
+# Verify organization can be deleted successfully
 @pytest.mark.smoke
-def test_delete_organization(authenticated_page, new_organization_page, new_organization_data):
+def test_delete_organization_success(authenticated_page, new_organization_page, new_organization_data):
     org_name = new_organization_data["organization"]["namePrefix"]
     new_organization_page.navigate_to_organizations()
     new_organization_page.delete_organization(org_name)

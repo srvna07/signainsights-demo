@@ -2,9 +2,6 @@ import uuid
 import pytest
 from playwright.sync_api import expect
 
-from utils.data_reader import DataReader
-from utils.data_factory import DataFactory
-
 
 @pytest.fixture
 def created_orgs(authenticated_page, new_organization_page, new_organization_data):
@@ -53,8 +50,9 @@ def created_reports(authenticated_page, report_registration_page, report_registr
     return report_map
 
 
+# Verify report visibility based on user role and organization RBAC
 @pytest.mark.smoke
-def test_report_visibility_rbac(authenticated_page, new_user_page, new_user_data,
+def test_report_visibility_based_on_rbac(authenticated_page, new_user_page, new_user_data,
                                 created_orgs, created_reports):
     page    = new_user_page
     user    = new_user_data["user"]

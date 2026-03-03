@@ -42,7 +42,6 @@ def super_admin_data():
     ]:
         try:
             pg.goto(f"{config['base_url'].rstrip('/')}/dashboard")
-            # pg.wait_for_load_state("networkidle")
             sa_page.delete_user_if_exists(username)
         except Exception:
             pass
@@ -50,10 +49,6 @@ def super_admin_data():
 
 @pytest.fixture
 def super_admin_page(browser, super_admin_data):
-    """Function-scoped page for the Super Admin role.
-    Uses saved auth state — no login needed per test.
-    Docs: https://playwright.dev/python/docs/test-runners (function scope + multiple contexts)
-    """
     from pathlib import Path
     auth_state = Path("test-results/.auth/state.json")
     context    = browser.new_context(
@@ -76,6 +71,7 @@ def super_admin_page(browser, super_admin_data):
     context.close()
 
 
+# Verify super admin has full sidebar access to all pages
 @pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_has_full_sidebar_access(super_admin_page):
@@ -83,6 +79,7 @@ def test_super_admin_has_full_sidebar_access(super_admin_page):
     super_admin_page.verify_full_sidebar_access()
 
 
+# Verify super admin can see all user type options
 @pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_see_all_user_type_options(super_admin_page):
@@ -90,6 +87,7 @@ def test_super_admin_can_see_all_user_type_options(super_admin_page):
     super_admin_page.verify_all_user_type_options_available()
 
 
+# Verify super admin can create another super admin user
 @pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_can_create_super_admin(super_admin_page, super_admin_data):
@@ -99,6 +97,7 @@ def test_super_admin_can_create_super_admin(super_admin_page, super_admin_data):
     super_admin_page.verify_user_in_table(user["username"])
 
 
+# Verify super admin can create signa user
 @pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_create_signa_user(super_admin_page, super_admin_data):
@@ -108,6 +107,7 @@ def test_super_admin_can_create_signa_user(super_admin_page, super_admin_data):
     super_admin_page.verify_user_in_table(user["username"])
 
 
+# Verify super admin can create organization admin user
 @pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_create_organization_admin(super_admin_page, super_admin_data):
@@ -117,6 +117,7 @@ def test_super_admin_can_create_organization_admin(super_admin_page, super_admin
     super_admin_page.verify_user_in_table(user["username"])
 
 
+# Verify super admin can create organization user
 @pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_create_organization_user(super_admin_page, super_admin_data):
@@ -126,6 +127,7 @@ def test_super_admin_can_create_organization_user(super_admin_page, super_admin_
     super_admin_page.verify_user_in_table(user["username"])
 
 
+# Verify super admin can access report registration page
 @pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_access_report_registration(super_admin_page):
@@ -133,6 +135,7 @@ def test_super_admin_can_access_report_registration(super_admin_page):
     super_admin_page.verify_report_registration_page_accessible()
 
 
+# Verify super admin can access organization registration page
 @pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_access_organization_registration(super_admin_page):
@@ -140,6 +143,7 @@ def test_super_admin_can_access_organization_registration(super_admin_page):
     super_admin_page.verify_organizations_page_accessible()
 
 
+# Verify super admin can modify any user
 @pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_can_modify_any_user(super_admin_page, super_admin_data):
@@ -154,6 +158,7 @@ def test_super_admin_can_modify_any_user(super_admin_page, super_admin_data):
     )
 
 
+# Verify super admin can delete any user
 @pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_can_delete_any_user(super_admin_page, super_admin_data):

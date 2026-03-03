@@ -2,24 +2,19 @@ import pytest
 from playwright.sync_api import expect
 
 
-# ---------------------------------------------------------------
-# Fixture: authenticated landing page
-# ---------------------------------------------------------------
 @pytest.fixture
 def landing(landing_page, authenticated_page):
-    """Provide a LandingPage instance backed by an authenticated session."""
     return landing_page
 
 
-# ---------------------------------------------------------------
-# Landing Page - TC 01: Verify Landing Page loads successfully
-# ---------------------------------------------------------------
+# Verify Landing Page loads successfully with all components
 @pytest.mark.smoke
 @pytest.mark.medium
 def test_landing_page_loads(landing):
-    """Verify Landing Page loads with sidebar, top bar user menu, and footer."""
     landing.verify_page_loaded()
 
+
+# Verify sidebar menu navigation loads correct URL
 @pytest.mark.medium
 @pytest.mark.parametrize(
     "menu_name, expected_slug",
@@ -31,7 +26,6 @@ def test_landing_page_loads(landing):
         ("Report Registrations", "report-registration"),
     ],
 )
-def test_sidebar_navigation(landing, menu_name, expected_slug):
-    """Verify sidebar menu navigation loads correct URL."""
+def test_sidebar_navigation_loads_correct_url(landing, menu_name, expected_slug):
     landing.click_sidebar_item(menu_name)
     landing.verify_url_contains(expected_slug)

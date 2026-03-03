@@ -52,7 +52,8 @@ def delete_all(session, fetch_url, delete_url, id_field, name_field, prefix, lab
     print(f"[SUMMARY] {label} — Deleted: {deleted}, Failed: {failed}")
 
 
-def test_cleanup():
+# Verify test data is deleted from API
+def test_cleanup_api_test_data():
     token = get_token()
     if not token:
         pytest.skip("Token not found. Run test_get_token.py first.")

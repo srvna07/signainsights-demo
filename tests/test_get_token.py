@@ -11,10 +11,8 @@ ENV    = get_env()
 config = DataReader.load_yaml(f"configs/{ENV}.yaml")
 
 
-def test_get_token(page: Page, credentials):
-    """Log in and save the AccessToken from localStorage to config.json.
-    This token is consumed by test_get_data_ids_delete.py for API cleanup.
-    """
+# Verify login and save access token to config.json for API cleanup
+def test_save_access_token_to_config(page: Page, credentials):
     login = LoginPage(page)
     login.navigate(config["base_url"])
     login.login(credentials["username"], credentials["password"])
