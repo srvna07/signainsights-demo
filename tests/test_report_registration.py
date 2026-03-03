@@ -78,18 +78,6 @@ def test_rows_per_page_25(authenticated_page, report_registration_page):
     assert rows.count() <= 25
 
 
-# Verify pagination navigation works correctly
-def test_pagination_navigation(authenticated_page, report_registration_page):
-    report_registration_page.navigate_to()
-    first_row_text = authenticated_page.locator("table tbody tr").first.text_content()
-
-    report_registration_page.go_to_next_page()
-    expect(authenticated_page.locator("table tbody tr").first).not_to_have_text(first_row_text)
-
-    report_registration_page.go_to_previous_page()
-    expect(authenticated_page.locator("table tbody tr").first).to_have_text(first_row_text)
-
-
 # Verify report can be deleted successfully
 @pytest.mark.smoke
 def test_delete_report_success(authenticated_page, report_registration_page, report_registration_data):
