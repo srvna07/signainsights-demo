@@ -8,7 +8,6 @@ def landing(landing_page, authenticated_page):
 
 
 # Verify Landing Page loads successfully with all components
-@pytest.mark.smoke
 @pytest.mark.medium
 def test_landing_page_loads(landing):
     landing.verify_page_loaded()

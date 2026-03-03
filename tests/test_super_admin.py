@@ -72,7 +72,6 @@ def super_admin_page(browser, super_admin_data):
 
 
 # Verify super admin has full sidebar access to all pages
-@pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_has_full_sidebar_access(super_admin_page):
     super_admin_page.navigate_to_dashboard()
@@ -80,7 +79,6 @@ def test_super_admin_has_full_sidebar_access(super_admin_page):
 
 
 # Verify super admin can see all user type options
-@pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_see_all_user_type_options(super_admin_page):
     super_admin_page.navigate_to_dashboard()
@@ -88,7 +86,6 @@ def test_super_admin_can_see_all_user_type_options(super_admin_page):
 
 
 # Verify super admin can create another super admin user
-@pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_can_create_super_admin(super_admin_page, super_admin_data):
     user = super_admin_data["super_admin_user"]
@@ -98,7 +95,6 @@ def test_super_admin_can_create_super_admin(super_admin_page, super_admin_data):
 
 
 # Verify super admin can create signa user
-@pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_create_signa_user(super_admin_page, super_admin_data):
     user = super_admin_data["users_to_create"]["signa_user"]
@@ -108,7 +104,6 @@ def test_super_admin_can_create_signa_user(super_admin_page, super_admin_data):
 
 
 # Verify super admin can create organization admin user
-@pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_create_organization_admin(super_admin_page, super_admin_data):
     user = super_admin_data["users_to_create"]["org_admin"]
@@ -118,7 +113,6 @@ def test_super_admin_can_create_organization_admin(super_admin_page, super_admin
 
 
 # Verify super admin can create organization user
-@pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_create_organization_user(super_admin_page, super_admin_data):
     user = super_admin_data["users_to_create"]["org_user"]
@@ -128,7 +122,6 @@ def test_super_admin_can_create_organization_user(super_admin_page, super_admin_
 
 
 # Verify super admin can access report registration page
-@pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_access_report_registration(super_admin_page):
     super_admin_page.navigate_to_dashboard()
@@ -136,7 +129,6 @@ def test_super_admin_can_access_report_registration(super_admin_page):
 
 
 # Verify super admin can access organization registration page
-@pytest.mark.smoke
 @pytest.mark.high
 def test_super_admin_can_access_organization_registration(super_admin_page):
     super_admin_page.navigate_to_dashboard()
@@ -144,7 +136,6 @@ def test_super_admin_can_access_organization_registration(super_admin_page):
 
 
 # Verify super admin can modify any user
-@pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_can_modify_any_user(super_admin_page, super_admin_data):
     target = super_admin_data["target_user_for_modification"]
@@ -159,7 +150,6 @@ def test_super_admin_can_modify_any_user(super_admin_page, super_admin_data):
 
 
 # Verify super admin can delete any user
-@pytest.mark.smoke
 @pytest.mark.critical
 def test_super_admin_can_delete_any_user(super_admin_page, super_admin_data):
     target = super_admin_data["target_user_for_modification"]

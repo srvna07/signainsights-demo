@@ -11,7 +11,6 @@ def login_page_ready(login_page, config_fixture):
 
 
 # Verify login page loads successfully
-@pytest.mark.smoke
 @pytest.mark.medium
 def test_login_page_loads(login_page, config_fixture):
     login_page.navigate(config_fixture["base_url"])

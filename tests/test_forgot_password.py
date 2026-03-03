@@ -11,7 +11,6 @@ def fp_page(forgot_password_page, config_fixture):
 
 
 # Verify Forgot Password page loads successfully
-@pytest.mark.smoke
 @pytest.mark.medium
 def test_forgot_password_page_loads(forgot_password_page, config_fixture):
     forgot_password_page.navigate(config_fixture["base_url"])
@@ -19,7 +18,6 @@ def test_forgot_password_page_loads(forgot_password_page, config_fixture):
 
 
 # Verify page header displays correctly
-@pytest.mark.smoke
 @pytest.mark.low
 def test_header_text_displays_correctly(fp_page):
     fp_page.verify_header_text()
@@ -64,7 +62,6 @@ def test_contact_us_navigation_redirects(fp_page, page):
 
 
 # Verify current URL matches Forgot Password page
-@pytest.mark.smoke
 @pytest.mark.low
 def test_forgot_password_url_verification(forgot_password_page, config_fixture, page):
     forgot_password_page.navigate(config_fixture["base_url"])
