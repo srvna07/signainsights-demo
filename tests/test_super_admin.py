@@ -42,7 +42,7 @@ def super_admin_data():
     ]:
         try:
             pg.goto(f"{config['base_url'].rstrip('/')}/dashboard")
-            pg.wait_for_load_state("networkidle")
+            # pg.wait_for_load_state("networkidle")
             sa_page.delete_user_if_exists(username)
         except Exception:
             pass

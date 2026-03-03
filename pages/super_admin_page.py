@@ -90,7 +90,7 @@ class SuperAdminPage(BasePage):
         from utils.env_loader import get_env
 
         cfg = DataReader.load_yaml(f"configs/{get_env()}.yaml")
-        self.navigate_to_and_wait_network(f"{cfg['base_url'].rstrip('/')}/dashboard")
+        self.navigate_to_and_wait_network(f"{cfg['base_url'].rstrip('/')}/user-management")
 
     # ─────────────────────────────────────────────────────────────────────────
     # Actions - Form Management

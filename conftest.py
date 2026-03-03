@@ -183,7 +183,7 @@ def signa_page(browser: Browser):
     pg = context.new_page()
     pg.set_default_timeout(config["default_timeout"])
     pg.set_default_navigation_timeout(config["navigation_timeout"])
-    pg.goto(config["base_url"] + "/dashboard")
+    pg.goto(config["base_url"] + "/user-management")
 
     yield pg
 
