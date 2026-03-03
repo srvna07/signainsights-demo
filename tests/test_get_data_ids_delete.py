@@ -1,7 +1,10 @@
 import json
+import time
 import pytest
 import requests
 from pathlib import Path
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from utils.data_reader import DataReader
 from utils.env_loader import get_env
 
@@ -17,10 +20,28 @@ USER_PREFIX   = "test_"
 REPORT_PREFIX = "test_"
 ORG_PREFIX    = "test_"
 
+# Retry config: retries on connection errors and 5xx responses
+RETRY_STRATEGY = Retry(
+    total=3,
+    backoff_factor=1,          # waits 1s, 2s, 4s between retries
+    status_forcelist=[500, 502, 503, 504],
+    allowed_methods=["GET", "DELETE"],
+    raise_on_status=False,
+)
+
 
 def get_token():
     config_file = ROOT / "config.json"
     return json.loads(config_file.read_text()).get("token") if config_file.exists() else None
+
+
+def build_session(token):
+    session = requests.Session()
+    session.headers.update({"Authorization": f"Bearer {token}"})
+    adapter = HTTPAdapter(max_retries=RETRY_STRATEGY)
+    session.mount("http://", adapter)
+    session.mount("https://", adapter)
+    return session
 
 
 def delete_all(session, fetch_url, delete_url, id_field, name_field, prefix, label):
@@ -40,26 +61,40 @@ def delete_all(session, fetch_url, delete_url, id_field, name_field, prefix, lab
 
     deleted, failed = 0, 0
     for item in items:
-        item_id = item[id_field]
-        res     = session.delete(f"{API_BASE}{delete_url}/{item_id}")
-        if res.ok:
-            print(f"[OK] Deleted {item[name_field]} (ID: {item_id})")
-            deleted += 1
-        else:
-            print(f"[ERROR] Failed {item[name_field]} (ID: {item_id}): {res.status_code}")
-            failed += 1
+        item_id   = item[id_field]
+        item_name = item[name_field]
+        try:
+            res = session.delete(f"{API_BASE}{delete_url}/{item_id}")
+            if res.ok:
+                print(f"[OK] Deleted {item_name} (ID: {item_id})")
+                deleted += 1
+            else:
+                print(f"[ERROR] Failed {item_name} (ID: {item_id}): {res.status_code}")
+                failed += 1
+        except requests.exceptions.ConnectionError as e:
+            print(f"[WARN] Connection error for {item_name} (ID: {item_id}), retrying... {e}")
+            time.sleep(2)
+            try:
+                res = session.delete(f"{API_BASE}{delete_url}/{item_id}")
+                if res.ok:
+                    print(f"[OK] Deleted {item_name} (ID: {item_id}) after retry")
+                    deleted += 1
+                else:
+                    print(f"[ERROR] Failed {item_name} (ID: {item_id}) after retry: {res.status_code}")
+                    failed += 1
+            except Exception as retry_err:
+                print(f"[SKIP] Skipping {item_name} (ID: {item_id}) after retry failed: {retry_err}")
+                failed += 1
 
     print(f"[SUMMARY] {label} — Deleted: {deleted}, Failed: {failed}")
 
 
-# Verify test data is deleted from API
-def test_cleanup_api_test_data():
+def test_cleanup():
     token = get_token()
     if not token:
         pytest.skip("Token not found. Run test_get_token.py first.")
 
-    session = requests.Session()
-    session.headers.update({"Authorization": f"Bearer {token}"})
+    session = build_session(token)
 
     delete_all(session, "/api/User/findallusers", "/api/User/delete",
                "UserId", "UserName", USER_PREFIX, "Users")
@@ -73,8 +108,7 @@ def test_cleanup_api_test_data():
 
 if __name__ == "__main__":
     token   = get_token()
-    session = requests.Session()
-    session.headers.update({"Authorization": f"Bearer {token}"})
+    session = build_session(token)
     delete_all(session, "/api/User/findallusers", "/api/User/delete",
                "UserId", "UserName", USER_PREFIX, "Users")
     delete_all(session, "/api/Report/findall?pageNumber=1&pageSize=1000", "/api/Report/delete",

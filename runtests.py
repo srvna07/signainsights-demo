@@ -1,8 +1,13 @@
 import sys
 import pytest
 
-test_suite = [
+# Step 1: runs alone before parallel
+pre_suite = [
     "tests/test_get_token.py",
+]
+
+# Step 2: runs in parallel
+parallel_suite = [
     "tests/test_login.py",
     "tests/test_forgot_password.py",
     "tests/test_landing.py",
@@ -12,16 +17,32 @@ test_suite = [
     "tests/test_reportvisibilityRBAC.py",
     "tests/test_super_admin.py",
     "tests/test_signa_user.py",
+]
+
+# Step 3: runs alone after parallel
+post_suite = [
     "tests/test_get_data_ids_delete.py",
 ]
 
+
 def main():
-    # Forward any CLI args passed to this script (e.g. --headed, --browser, -k)
-    # then append the test suite paths
-    cli_args  = sys.argv[1:]
-    args      = ["-v", *cli_args, *test_suite]
-    print("\nRunning test suite with args:", args)
-    exit_code = pytest.main(args)
+    cli_args = sys.argv[1:]
+
+    # --- Phase 1: sequential pre-run ---
+    print("\n[Phase 1] Running pre-suite sequentially...")
+    exit_code = pytest.main(["-v", *cli_args, *pre_suite])
+    if exit_code != 0:
+        sys.exit(exit_code)
+
+    # --- Phase 2: parallel run ---
+    print("\n[Phase 2] Running parallel suite...")
+    exit_code = pytest.main(["-v", "--numprocesses=auto", "--dist=loadfile", *cli_args, *parallel_suite])
+    if exit_code != 0:
+        sys.exit(exit_code)
+
+    # --- Phase 3: sequential post-run ---
+    print("\n[Phase 3] Running post-suite sequentially...")
+    exit_code = pytest.main(["-v", *cli_args, *post_suite])
     sys.exit(exit_code)
 
 
