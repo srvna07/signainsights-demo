@@ -1,0 +1,13 @@
+base_url: "https://app.signainsights.com"
+apiUrl: "https://apiv2.signainsights.com"
+
+browser: "chromium"
+# headless is controlled by the --headed CLI flag (default: headless)
+# Run headed with: pytest --headed
+
+default_timeout: 30000
+navigation_timeout: 45000
+
+record_video_size:
+  width: 1280
+  height: 720

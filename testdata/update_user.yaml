@@ -1,0 +1,24 @@
+updated_basic:
+  firstName: "UpdatedFirst"
+  lastName: "UpdatedLast"
+
+role: "HR"
+organization: "SignaTech"
+userType: "Organization Admin"
+
+secondaryOrganizations:
+  - "SignaInsightsDemo"
+  - "TFL-Jacksonville"
+
+contact:
+  dob: "2026-02-10"
+  phone: "+91 79042-86162"
+  address1: "TestUpdated"
+  address2: "TestUpdated"
+  country: "TestUpdated"
+  city: "TestUpdated"
+  state: "TestUpdated"
+  zipCode: "606202"
+
+reports:
+  - "SignaTech - Technician"

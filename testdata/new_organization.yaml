@@ -1,0 +1,13 @@
+organization:
+  namePrefix: "test_org"
+  franchise_id: test_org
+contact:
+  phone: +91 9867543710
+  mobile: +91 9867543711
+  address1: Test
+  address2: Test
+  country: Test
+  city: Test
+  state: TEst
+  zip_code: '606201'
+  web_address: www.test.com
