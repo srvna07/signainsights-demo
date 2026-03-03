@@ -30,17 +30,17 @@ def signa_report_data():
     }
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def signa_orgs_page(signa_page):
     return OrganizationsPage(signa_page)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def signa_reports_page(signa_page):
     return ReportRegistrationPage(signa_page)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def signa_users_page(signa_page):
     return NewUserPage(signa_page)
 
@@ -206,4 +206,3 @@ def test_signa_user_cannot_access_super_admin(signa_users_page, super_admin_cred
     signa_users_page.user_management_btn.click()
     signa_users_page.search_user(sa_username)
     signa_users_page.verify_user_not_in_table(sa_username)
-

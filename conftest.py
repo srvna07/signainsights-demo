@@ -162,7 +162,7 @@ def authenticated_page(page: Page):
     """Function-scoped page pre-loaded with saved auth state."""
     page.set_default_timeout(config["default_timeout"])
     page.set_default_navigation_timeout(config["navigation_timeout"])
-    page.goto(config["base_url"] + "/dashboard")
+    page.goto(config["base_url"] + "/user-management")
     return page
 
 
@@ -183,6 +183,7 @@ def signa_page(browser: Browser):
     pg = context.new_page()
     pg.set_default_timeout(config["default_timeout"])
     pg.set_default_navigation_timeout(config["navigation_timeout"])
+    pg.goto(config["base_url"] + "/dashboard")
 
     yield pg
 

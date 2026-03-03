@@ -37,6 +37,7 @@ def test_edit_report(authenticated_page, report_registration_page, report_regist
     new_report  = report_registration_data["new_report"]
     edit_report = report_registration_data["edit_report"]
 
+    report_registration_page.navigate_to()
     report_registration_page.edit_report(
         report_name=new_report["report_name"],
         new_name=edit_report["report_name"],
@@ -50,12 +51,14 @@ def test_edit_report(authenticated_page, report_registration_page, report_regist
 def test_search_report(authenticated_page, report_registration_page, report_registration_data):
     report_name = report_registration_data["edit_report"]["report_name"]
 
+    report_registration_page.navigate_to()
     report_registration_page.search(report_name)
     report_registration_page.verify_search_result(report_name)
     report_registration_page.clear_search()
 
 
 def test_rows_per_page_5(authenticated_page, report_registration_page):
+    report_registration_page.navigate_to()
     report_registration_page.set_rows_per_page(5)
     rows = authenticated_page.locator("table tbody tr")
     expect(rows.first).to_be_visible()
@@ -63,6 +66,7 @@ def test_rows_per_page_5(authenticated_page, report_registration_page):
 
 
 def test_rows_per_page_25(authenticated_page, report_registration_page):
+    report_registration_page.navigate_to()
     report_registration_page.set_rows_per_page(25)
     rows = authenticated_page.locator("table tbody tr")
     assert rows.count() <= 25
@@ -82,6 +86,7 @@ def test_pagination(authenticated_page, report_registration_page):
 @pytest.mark.smoke
 def test_delete_report(authenticated_page, report_registration_page, report_registration_data):
     report_name = report_registration_data["edit_report"]["report_name"]
+    report_registration_page.navigate_to()
     report_registration_page.delete_report(report_name)
     report_registration_page.verify_report_not_visible(report_name)
 
