@@ -1,3 +1,4 @@
+import re
 from playwright.sync_api import Page, expect
 from .base_page import BasePage
 
@@ -36,3 +37,11 @@ class LoginPage(BasePage):
         expect(self.username_input).to_be_visible()
         expect(self.password_input).to_be_visible()
         expect(self.login_button).to_be_visible()
+
+    def verify_redirected_to_dashboard(self):
+        expect(self.page).not_to_have_url(re.compile("/login"))
+        expect(self.page).to_have_url(re.compile("dashboard", re.IGNORECASE))
+
+    def verify_forgot_password_navigation(self):
+        expect(self.forgot_password_header).to_be_visible()
+        expect(self.page).to_have_url(re.compile("forgot-password", re.IGNORECASE))
