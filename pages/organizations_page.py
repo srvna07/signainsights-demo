@@ -108,13 +108,13 @@ class OrganizationsPage(BasePage):
         self.zip_code.fill(contact["zip_code"])
 
     def verify_success(self):
-        expect(self.success_message).to_be_visible(timeout=10000)
+        expect(self.success_message).to_be_visible()
 
     def verify_update_success(self):
-        expect(self.update_success_message).to_be_visible(timeout=10000)
+        expect(self.update_success_message).to_be_visible()
 
     def verify_delete_success(self):
-        expect(self.delete_success_message).to_be_visible(timeout=10000)
+        expect(self.delete_success_message).to_be_visible()
 
     def verify_duplicate_error(self):
         expect(self.duplicate_error_message).to_be_visible()
@@ -126,5 +126,3 @@ class OrganizationsPage(BasePage):
     def verify_organization_not_in_table(self, org_name: str):
         self.search_organization(org_name)
         expect(self.page.get_by_role("cell", name=org_name).first).not_to_be_visible()
-
-
