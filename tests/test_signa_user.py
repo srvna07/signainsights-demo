@@ -15,9 +15,9 @@ def signa_org_name():
 def signa_user_names():
     domain = DataReader.load_yaml("testdata/new_user.yaml")["user"]["emailDomain"]
     return {
-        "signa":     {"username": DataFactory.random_username("test_signa_"),     "email": DataFactory.random_email("test_signa_",     domain)},
-        "org_admin": {"username": DataFactory.random_username("test_orgadmin_"),  "email": DataFactory.random_email("test_orgadmin_",  domain)},
-        "org_user":  {"username": DataFactory.random_username("test_orguser_"),   "email": DataFactory.random_email("test_orguser_",   domain)},
+        "signa":     {"username": DataFactory.random_username("test_signa_"),    "email": DataFactory.random_email("test_signa_",    domain)},
+        "org_admin": {"username": DataFactory.random_username("test_orgadmin_"), "email": DataFactory.random_email("test_orgadmin_", domain)},
+        "org_user":  {"username": DataFactory.random_username("test_orguser_"),  "email": DataFactory.random_email("test_orguser_",  domain)},
     }
 
 
@@ -58,7 +58,7 @@ def create_user(users_page, first, last, username, email, role, org, user_type, 
 
 
 # Verify organization can be created by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_create_organization(signa_orgs_page, new_organization_data, signa_org_name):
     contact = new_organization_data["contact"]
 
@@ -72,7 +72,7 @@ def test_signa_user_create_organization(signa_orgs_page, new_organization_data, 
 
 
 # Verify report can be created by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_create_report(signa_reports_page, signa_report_data, signa_org_name, report_registration_data):
     signa_reports_page.create_report(
         report_name=signa_report_data["report_name"],
@@ -83,11 +83,12 @@ def test_signa_user_create_report(signa_reports_page, signa_report_data, signa_o
         organization=signa_org_name,
     )
 
+    signa_reports_page.search(signa_report_data["report_name"])
     signa_reports_page.verify_report_visible(signa_report_data["report_name"])
 
 
 # Verify signa user can be created
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_create_signa_user(signa_users_page, new_user_data, signa_user_names):
     names = signa_user_names["signa"]
     create_user(
@@ -102,7 +103,7 @@ def test_signa_user_create_signa_user(signa_users_page, new_user_data, signa_use
 
 
 # Verify organization admin user can be created
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_create_org_admin(signa_users_page, new_user_data, signa_user_names, signa_org_name):
     names = signa_user_names["org_admin"]
     create_user(
@@ -117,7 +118,7 @@ def test_signa_user_create_org_admin(signa_users_page, new_user_data, signa_user
 
 
 # Verify organization user can be created
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_create_org_user(signa_users_page, new_user_data, signa_user_names, signa_org_name):
     names = signa_user_names["org_user"]
     create_user(
@@ -132,7 +133,7 @@ def test_signa_user_create_org_user(signa_users_page, new_user_data, signa_user_
 
 
 # Verify organization can be edited by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_edit_organization(signa_orgs_page, signa_org_name, update_organization_data):
     signa_orgs_page.navigate_to_organizations()
     signa_orgs_page.edit_organization(signa_org_name)
@@ -144,7 +145,7 @@ def test_signa_user_edit_organization(signa_orgs_page, signa_org_name, update_or
 
 
 # Verify report can be edited by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_edit_report(signa_reports_page, signa_report_data):
     signa_reports_page.navigate_to()
     signa_reports_page.edit_report(
@@ -157,7 +158,7 @@ def test_signa_user_edit_report(signa_reports_page, signa_report_data):
 
 
 # Verify user can be edited by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_edit_user(signa_users_page, signa_user_names, update_user_data, config_fixture):
     username = signa_user_names["org_admin"]["username"]
 
@@ -171,7 +172,7 @@ def test_signa_user_edit_user(signa_users_page, signa_user_names, update_user_da
 
 
 # Verify report can be deleted by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_delete_report(signa_reports_page, signa_report_data):
     signa_reports_page.navigate_to()
     signa_reports_page.delete_report(signa_report_data["edit_name"])
@@ -179,7 +180,7 @@ def test_signa_user_delete_report(signa_reports_page, signa_report_data):
 
 
 # Verify user can be deleted by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_delete_user(signa_users_page, signa_user_names, config_fixture):
     username = signa_user_names["org_user"]["username"]
 
@@ -192,7 +193,7 @@ def test_signa_user_delete_user(signa_users_page, signa_user_names, config_fixtu
 
 
 # Verify organization can be deleted by signa user
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_delete_organization(signa_orgs_page, update_organization_data):
     org_name = update_organization_data["updated_basic"]["name"]
 
@@ -204,10 +205,9 @@ def test_signa_user_delete_organization(signa_orgs_page, update_organization_dat
 
 
 # Verify signa user cannot access super admin users in search
-@pytest.mark.smoke
+@pytest.mark.medium
 def test_signa_user_cannot_access_super_admin(signa_users_page, super_admin_credentials):
     sa_username = super_admin_credentials["username"]
     signa_users_page.user_management_btn.click()
     signa_users_page.search_user(sa_username)
     signa_users_page.verify_user_not_in_table(sa_username)
-
