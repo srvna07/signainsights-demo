@@ -2,7 +2,7 @@ import os
 import pytest
 from pathlib import Path
 from datetime import datetime
-from playwright.sync_api import Page, Browser, Playwright
+from playwright.sync_api import Page, Browser
 
 from utils.env_loader import get_env
 from utils.data_reader import DataReader
@@ -24,56 +24,27 @@ AUTH_STATE_FILE       = Path("test-results/.auth/state.json")
 SIGNA_AUTH_STATE_FILE = Path("test-results/.auth/signa_state.json")
 
 
-# ---------------------------------------------------------------------------
-# pytest-playwright: browser launch options
-# Docs: https://playwright.dev/python/docs/test-runners#fixtures
-# ---------------------------------------------------------------------------
-
 @pytest.fixture(scope="session")
 def browser_type_launch_args(browser_type_launch_args):
-    return {
-        **browser_type_launch_args,
-        "args": ["--start-maximized"],
-    }
+    return {**browser_type_launch_args, "args": ["--start-maximized"]}
 
-
-# ---------------------------------------------------------------------------
-# pytest-playwright: context options
-# Docs: https://playwright.dev/python/docs/test-runners#fixtures
-# Docs (videos): https://playwright.dev/python/docs/videos
-#
-# record_video_size set here — record_video_dir is injected automatically
-# by the plugin when --video flag is used.
-# storage_state is set here so every function-scoped page starts
-# already authenticated (no login needed per test).
-# ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args):
-    video_size = config.get("record_video_size", {"width": 1280, "height": 720})
     args = {
         **browser_context_args,
         "no_viewport": True,
-        "record_video_size": video_size,
+        "record_video_size": config.get("record_video_size", {"width": 1280, "height": 720}),
     }
-    # Inject saved auth state once it exists (set up by setup_auth below)
     if AUTH_STATE_FILE.exists():
         args["storage_state"] = str(AUTH_STATE_FILE)
     return args
 
 
-# ---------------------------------------------------------------------------
-# Config fixture
-# ---------------------------------------------------------------------------
-
 @pytest.fixture(scope="session")
 def config_fixture():
     return config
 
-
-# ---------------------------------------------------------------------------
-# Credentials fixtures — single source of truth, fail-fast if missing
-# ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
 def credentials():
@@ -110,21 +81,11 @@ def registered_email():
     return email
 
 
-# ---------------------------------------------------------------------------
-# Auth setup — session-scoped, runs once before all tests.
-#
-# Docs (auth): https://playwright.dev/python/docs/auth
-# The recommended pattern is: log in once, save storage_state to a file,
-# then pass that file to every new context via browser_context_args.
-# This gives each test a fresh isolated page that is already authenticated.
-# ---------------------------------------------------------------------------
-
+# Login once per session and save auth state for main and signa users
 @pytest.fixture(scope="session", autouse=True)
 def setup_auth(browser: Browser, credentials, signa_credentials):
-    """Log in once per session for each user role and save auth state."""
     AUTH_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    # --- Main user ---
     context = browser.new_context(no_viewport=True)
     pg = context.new_page()
     pg.set_default_timeout(config["default_timeout"])
@@ -137,7 +98,6 @@ def setup_auth(browser: Browser, credentials, signa_credentials):
     context.close()
     logger.info(f"Auth state saved → {AUTH_STATE_FILE}")
 
-    # --- Signa user ---
     signa_context = browser.new_context(no_viewport=True)
     signa_pg = signa_context.new_page()
     signa_pg.set_default_timeout(config["default_timeout"])
@@ -151,29 +111,18 @@ def setup_auth(browser: Browser, credentials, signa_credentials):
     logger.info(f"Signa auth state saved → {SIGNA_AUTH_STATE_FILE}")
 
 
-# ---------------------------------------------------------------------------
-# authenticated_page — function-scoped, uses saved auth state.
-# Each test gets a fresh isolated page that is already logged in.
-# Tracing and video are handled automatically by the plugin per-test.
-# ---------------------------------------------------------------------------
-
+# Fresh authenticated page per test using saved auth state
 @pytest.fixture
 def authenticated_page(page: Page):
-    """Function-scoped page pre-loaded with saved auth state."""
     page.set_default_timeout(config["default_timeout"])
     page.set_default_navigation_timeout(config["navigation_timeout"])
     page.goto(config["base_url"] + "/user-management")
     return page
 
 
-# ---------------------------------------------------------------------------
-# signa_page — function-scoped, separate context with signa auth state.
-# Docs (multiple contexts): https://playwright.dev/python/docs/test-runners
-# ---------------------------------------------------------------------------
-
+# Fresh signa user page per test with its own browser context
 @pytest.fixture
 def signa_page(browser: Browser):
-    """Function-scoped page for the Signa user role."""
     context = browser.new_context(
         no_viewport=True,
         storage_state=str(SIGNA_AUTH_STATE_FILE),
@@ -187,19 +136,11 @@ def signa_page(browser: Browser):
 
     yield pg
 
-    # Docs (trace): https://playwright.dev/python/docs/trace-viewer-intro
-    # Docs (video): https://playwright.dev/python/docs/videos — saved on close
     output_dir = Path("test-results")
     output_dir.mkdir(parents=True, exist_ok=True)
     context.tracing.stop(path=str(output_dir / "signa-trace.zip"))
     context.close()
 
-
-# ---------------------------------------------------------------------------
-# Page object fixtures — function-scoped to match the plugin's page fixture.
-# Docs: https://playwright.dev/python/docs/test-runners#fixtures
-# "Function scope: created when requested in a test, destroyed when test ends"
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def login_page(page: Page):
@@ -227,10 +168,6 @@ def new_organization_page(authenticated_page: Page):
 def report_registration_page(authenticated_page: Page):
     return ReportRegistrationPage(authenticated_page)
 
-
-# ---------------------------------------------------------------------------
-# Data fixtures — session-scoped so test data is generated once per run
-# ---------------------------------------------------------------------------
 
 @pytest.fixture(scope="session")
 def new_user_data():
@@ -270,12 +207,7 @@ def update_organization_data():
     return DataReader.load_yaml("testdata/update_organization.yaml")
 
 
-# ---------------------------------------------------------------------------
-# Failure screenshot hook
-# Covers authenticated_page and signa_page which are not the plugin's
-# default page fixture and so are not covered by --screenshot flag.
-# ---------------------------------------------------------------------------
-
+# Captures screenshot on test failure for authenticated_page and signa_page
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
