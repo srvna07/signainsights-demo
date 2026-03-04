@@ -147,13 +147,13 @@ class NewUserPage(BasePage):
         self.navigate_to(f"{base_url.rstrip('/')}/dashboard")
 
     def verify_success(self):
-        expect(self.success_message).to_be_visible(timeout=10000)
+        expect(self.success_message).to_be_visible()
 
     def verify_update_success(self):
-        expect(self.update_success_message).to_be_visible(timeout=10000)
+        expect(self.update_success_message).to_be_visible()
 
     def verify_delete_success(self):
-        expect(self.delete_success_message).to_be_visible(timeout=10000)
+        expect(self.delete_success_message).to_be_visible()
 
     def verify_user_in_table(self, username: str):
         self.search_input.fill(username)
