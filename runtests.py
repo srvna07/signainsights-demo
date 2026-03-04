@@ -3,7 +3,7 @@ import pytest
 
 # Step 1: runs sequentially before parallel — token + smoke must pass to continue
 pre_suite = [
-    # "tests/test_get_token.py",
+    "tests/test_get_token.py",
     "tests/test_smoke.py",
 ]
 

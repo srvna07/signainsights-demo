@@ -1,0 +1,102 @@
+{
+  "super_admin_user": {
+    "firstName": "Super",
+    "lastName": "Admin",
+    "usernamePrefix": "test_sa_",
+    "emailDomain": "@gmail.com",
+    "role": "Admin",
+    "organization": "SignaTech",
+    "userType": "Super Admin",
+    "contact": {
+      "dob": "2026-02-13",
+      "phone": "+91 79042-86161",
+      "address1": "Test",
+      "address2": "Test",
+      "country": "Test",
+      "city": "Test",
+      "state": "Test",
+      "zipCode": "606201"
+    }
+  },
+  "users_to_create": {
+    "signa_user": {
+      "firstName": "Signa",
+      "lastName": "User",
+      "usernamePrefix": "test_signa_",
+      "emailDomain": "@gmail.com",
+      "role": "Admin",
+      "organization": "SignaTech",
+      "userType": "Signa User",
+      "contact": {
+        "dob": "2026-02-13",
+        "phone": "+91 79042-86161",
+        "address1": "Test",
+        "address2": "Test",
+        "country": "Test",
+        "city": "Test",
+        "state": "Test",
+        "zipCode": "606201"
+      }
+    },
+    "org_admin": {
+      "firstName": "Organization",
+      "lastName": "Admin",
+      "usernamePrefix": "test_orgadmin_",
+      "emailDomain": "@gmail.com",
+      "role": "Admin",
+      "organization": "SignaTech",
+      "userType": "Organization Admin",
+      "contact": {
+        "dob": "2026-02-13",
+        "phone": "+91 79042-86161",
+        "address1": "Test",
+        "address2": "Test",
+        "country": "Test",
+        "city": "Test",
+        "state": "Test",
+        "zipCode": "606201"
+      }
+    },
+    "org_user": {
+      "firstName": "Organization",
+      "lastName": "User",
+      "usernamePrefix": "test_orguser_",
+      "emailDomain": "@gmail.com",
+      "role": "Admin",
+      "organization": "SignaTech",
+      "userType": "Organization User",
+      "contact": {
+        "dob": "2026-02-13",
+        "phone": "+91 79042-86161",
+        "address1": "Test",
+        "address2": "Test",
+        "country": "Test",
+        "city": "Test",
+        "state": "Test",
+        "zipCode": "606201"
+      }
+    }
+  },
+  "target_user_for_modification": {
+    "firstName": "Target",
+    "lastName": "User",
+    "usernamePrefix": "test_target_",
+    "emailDomain": "@gmail.com",
+    "role": "Admin",
+    "organization": "SignaTech",
+    "userType": "Organization User",
+    "updated_firstName": "Modified",
+    "updated_lastName": "Target",
+    "contact": {
+      "dob": "2026-02-13",
+      "phone": "+91 79042-86161",
+      "address1": "Test",
+      "address2": "Test",
+      "country": "Test",
+      "city": "Test",
+      "state": "Test",
+      "zipCode": "606201"
+    }
+  }
+}
+

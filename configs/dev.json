@@ -1,0 +1,12 @@
+{
+  "base_url": "https://dev.signainsights.com",
+  "apiUrl": "https://devapiv2.signainsights.com",
+  "browser": "chromium",
+  "default_timeout": 30000,
+  "navigation_timeout": 45000,
+  "record_video_size": {
+    "width": 1280,
+    "height": 720
+  }
+}
+
