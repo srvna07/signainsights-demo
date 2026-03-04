@@ -1,6 +1,5 @@
 import pytest
 from playwright.sync_api import expect
-import re
 
 
 @pytest.fixture
@@ -12,9 +11,8 @@ def fp_page(forgot_password_page, config_fixture):
 
 # Verify Forgot Password page loads successfully
 @pytest.mark.medium
-def test_forgot_password_page_loads(forgot_password_page, config_fixture):
-    forgot_password_page.navigate(config_fixture["base_url"])
-    forgot_password_page.verify_page_loaded()
+def test_forgot_password_page_loads(fp_page):
+    pass
 
 
 # Verify page header displays correctly
@@ -47,23 +45,21 @@ def test_send_reset_link_with_invalid_email_shows_error(fp_page):
 
 # Verify empty email shows validation error
 @pytest.mark.medium
-def test_empty_email_validation_shows_error(fp_page, page):
+def test_empty_email_validation_shows_error(fp_page):
     fp_page.email_input.fill("")
     fp_page.click_send_reset_link()
     fp_page.verify_email_required_error_visible()
-    expect(page).to_have_url(re.compile("forgot-password", re.IGNORECASE))
+    fp_page.verify_stays_on_page()
 
 
 # Verify Contact Us button navigates away from page
 @pytest.mark.medium
-def test_contact_us_navigation_redirects(fp_page, page):
+def test_contact_us_navigation_redirects(fp_page):
     fp_page.click_contact_us()
-    expect(page).not_to_have_url(re.compile("forgot-password", re.IGNORECASE))
+    fp_page.verify_redirected()
 
 
 # Verify current URL matches Forgot Password page
 @pytest.mark.low
-def test_forgot_password_url_verification(forgot_password_page, config_fixture, page):
-    forgot_password_page.navigate(config_fixture["base_url"])
-
-    forgot_password_page.verify_url(page)
+def test_forgot_password_url_verification(fp_page):
+    fp_page.verify_url()

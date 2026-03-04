@@ -48,5 +48,11 @@ class ForgotPasswordPage(BasePage):
     def verify_success_message_visible(self):
         expect(self.success_message).to_be_visible()
 
-    def verify_url(self, page):
-        expect(page).to_have_url(re.compile(r"forgot-password"))
+    def verify_url(self):
+        expect(self.page).to_have_url(re.compile(r"forgot-password"))
+
+    def verify_stays_on_page(self):
+        expect(self.page).to_have_url(re.compile("forgot-password", re.IGNORECASE))
+
+    def verify_redirected(self):
+        expect(self.page).not_to_have_url(re.compile("forgot-password", re.IGNORECASE))
