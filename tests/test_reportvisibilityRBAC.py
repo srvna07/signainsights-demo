@@ -1,10 +1,9 @@
 import uuid
 import pytest
-from playwright.sync_api import expect
 
 
 @pytest.fixture
-def created_orgs(authenticated_page, new_organization_page, new_organization_data):
+def created_orgs(new_organization_page, new_organization_data):
     base_org = new_organization_data["organization"]
     contact  = new_organization_data["contact"]
     orgs     = []
@@ -26,7 +25,7 @@ def created_orgs(authenticated_page, new_organization_page, new_organization_dat
 
 
 @pytest.fixture
-def created_reports(authenticated_page, report_registration_page, report_registration_data, created_orgs):
+def created_reports(report_registration_page, report_registration_data, created_orgs):
     base_report = report_registration_data["new_report"]
     report_map  = {}
 
@@ -51,17 +50,14 @@ def created_reports(authenticated_page, report_registration_page, report_registr
 
 
 # Verify report visibility based on user role and organization RBAC
-@pytest.mark.smoke
-def test_report_visibility_based_on_rbac(authenticated_page, new_user_page, new_user_data,
-                                created_orgs, created_reports):
-    page    = new_user_page
+@pytest.mark.medium
+def test_report_visibility_based_on_rbac(new_user_page, new_user_data, created_orgs, created_reports):
     user    = new_user_data["user"]
     contact = new_user_data["contact"]
 
-    expect(page.user_management_btn).to_be_visible()
-    page.user_management_btn.click()
+    new_user_page.user_management_btn.click()
 
-    org1, org2, org3 = created_orgs
+    org1, org2, org3       = created_orgs
     report1, report2, report3 = created_reports[org1], created_reports[org2], created_reports[org3]
 
     def create_user(first, last, primary_org, secondary_orgs, visible_reports, hidden_reports, assign_reports):
@@ -69,24 +65,24 @@ def test_report_visibility_based_on_rbac(authenticated_page, new_user_page, new_
         username = f"{user['usernamePrefix']}{uid}"
         email    = f"{username}{user['emailDomain']}"
 
-        page.open_form()
-        page.fill_basic_info(first, last, username, email)
-        page.select_role("Admin")
-        page.select_organization(primary_org)
-        page.select_user_type("Organization Admin")
-        page.select_secondary_orgs(*secondary_orgs)
-        page.fill_contact_info(**contact)
+        new_user_page.open_form()
+        new_user_page.fill_basic_info(first, last, username, email)
+        new_user_page.select_role("Admin")
+        new_user_page.select_organization(primary_org)
+        new_user_page.select_user_type("Organization Admin")
+        new_user_page.select_secondary_orgs(*secondary_orgs)
+        new_user_page.fill_contact_info(**contact)
 
-        page.open_reports_dropdown()
+        new_user_page.open_reports_dropdown()
         for r in visible_reports:
-            page.verify_report_visible(r)
+            new_user_page.verify_report_visible(r)
         for r in hidden_reports:
-            page.verify_report_not_visible(r)
-        page.close_reports_dropdown()
+            new_user_page.verify_report_not_visible(r)
+        new_user_page.close_reports_dropdown()
 
-        page.select_reports(*assign_reports)
-        page.submit_form()
-        page.verify_success()
+        new_user_page.select_reports(*assign_reports)
+        new_user_page.submit_form()
+        new_user_page.verify_success()
 
     create_user("Admin", "One", org1, [org2], [report1, report2], [report3], [report1, report2])
     create_user("Admin", "Two", org1, [org3], [report1, report3], [report2], [report1, report3])
@@ -95,20 +91,20 @@ def test_report_visibility_based_on_rbac(authenticated_page, new_user_page, new_
     username_common = f"{user['usernamePrefix']}{uid_common}"
     email_common    = f"{username_common}{user['emailDomain']}"
 
-    page.open_form()
-    page.fill_basic_info("Common", "User", username_common, email_common)
-    page.select_role("Admin")
-    page.select_organization(org1)
-    page.select_user_type("Organization User")
-    page.select_secondary_orgs(org2, org3)
-    page.fill_contact_info(**contact)
+    new_user_page.open_form()
+    new_user_page.fill_basic_info("Common", "User", username_common, email_common)
+    new_user_page.select_role("Admin")
+    new_user_page.select_organization(org1)
+    new_user_page.select_user_type("Organization User")
+    new_user_page.select_secondary_orgs(org2, org3)
+    new_user_page.fill_contact_info(**contact)
 
-    page.open_reports_dropdown()
-    page.verify_report_visible(report1)
-    page.verify_report_visible(report2)
-    page.verify_report_visible(report3)
-    page.close_reports_dropdown()
+    new_user_page.open_reports_dropdown()
+    new_user_page.verify_report_visible(report1)
+    new_user_page.verify_report_visible(report2)
+    new_user_page.verify_report_visible(report3)
+    new_user_page.close_reports_dropdown()
 
-    page.select_reports(report1, report2, report3)
-    page.submit_form()
-    page.verify_success()
+    new_user_page.select_reports(report1, report2, report3)
+    new_user_page.submit_form()
+    new_user_page.verify_success()
