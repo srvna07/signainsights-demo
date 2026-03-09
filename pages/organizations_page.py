@@ -33,6 +33,8 @@ class OrganizationsPage(BasePage):
         self.delete_success_message   = page.get_by_text("Organization deleted successfully")
         self.duplicate_error_message  = page.get_by_text("Organization already exists.")
 
+        self.page_heading             = page.get_by_role("heading", name="Organization Management")
+
     def open_form(self):
         self.organization_btn.click()
         self.new_organization_btn.click()
@@ -126,3 +128,20 @@ class OrganizationsPage(BasePage):
     def verify_organization_not_in_table(self, org_name: str):
         self.search_organization(org_name)
         expect(self.page.get_by_role("cell", name=org_name).first).not_to_be_visible()
+
+    def verify_heading_visible(self):
+        expect(self.page_heading).to_be_visible()
+
+    def verify_heading_not_visible(self):
+        expect(self.page_heading).not_to_be_visible()
+
+    def open_org_switcher(page):
+        switcher = page.get_by_role("combobox")
+        switcher.click()
+        expect(page.get_by_role("listbox")).to_be_visible()
+        return switcher
+
+    def select_organization(page, org_name):
+        option = page.get_by_role("option", name=org_name)
+        option.click()
+        page.wait_for_load_state("domcontentloaded")

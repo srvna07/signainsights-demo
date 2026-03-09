@@ -1,0 +1,79 @@
+{
+  "org_user_primary": {
+    "firstName": "Org",
+    "lastName": "User",
+    "usernamePrefix": "test_orguser_primary_",
+    "emailDomain": "@gmail.com",
+    "role": "Admin",
+    "organization": "SignaTech",
+    "userType": "Organization User",
+    "secondaryOrganizations": [],
+    "contact": {
+      "dob": "2026-02-13",
+      "phone": "+91 79042-86161",
+      "address1": "Test",
+      "address2": "Test",
+      "country": "Test",
+      "city": "Test",
+      "state": "Test",
+      "zipCode": "606201"
+    },
+    "reports": [
+      "SignaTech - Profit and Loss"
+    ]
+  },
+  "org_user_multi": {
+    "firstName": "Multi",
+    "lastName": "OrgUser",
+    "usernamePrefix": "test_orguser_multi_",
+    "emailDomain": "@gmail.com",
+    "role": "Admin",
+    "organization": "SignaTech",
+    "userType": "Organization User",
+    "secondaryOrganizations": [
+      "SignaInsightsDemo",
+      "TFL-Memphis",
+      "TFL-Jacksonville"
+    ],
+    "contact": {
+      "dob": "2026-02-13",
+      "phone": "+91 79042-86161",
+      "address1": "Test",
+      "address2": "Test",
+      "country": "Test",
+      "city": "Test",
+      "state": "Test",
+      "zipCode": "606201"
+    },
+    "reports": [
+      "SignaTech - Profit and Loss",
+      "TFL-Memphis - Revenue By"
+    ]
+  },
+  "update": {
+    "updated_basic": {
+      "firstName": "UpdatedOrg",
+      "lastName": "UpdatedUser"
+    },
+    "role": "HR",
+    "organization": "SignaTech",
+    "userType": "Organization User",
+    "secondaryOrganizations": [
+      "SignaInsightsDemo",
+      "TFL-Jacksonville"
+    ],
+    "contact": {
+      "dob": "2026-02-10",
+      "phone": "+91 79042-86162",
+      "address1": "TestUpdated",
+      "address2": "TestUpdated",
+      "country": "TestUpdated",
+      "city": "TestUpdated",
+      "state": "TestUpdated",
+      "zipCode": "606202"
+    },
+    "reports": [
+      "SignaTech - Technician"
+    ]
+  }
+}

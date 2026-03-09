@@ -6,7 +6,7 @@ class LandingPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
-        self.user_menu_button         = page.get_by_role("button", name="Signed in as Test User")
+        self.user_menu_button         = page.get_by_role("button", name="Signed in as", exact=False)
         self.logout_menu_item         = page.get_by_role("menuitem", name="Logout")
         self.logout_confirm_button    = page.get_by_role("button", name="Logout")
         self.nav_dashboard            = page.get_by_role("button", name="Dashboard",            exact=False)

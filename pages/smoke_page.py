@@ -12,7 +12,7 @@ class SmokePage(BasePage):
         self.nav_insights             = page.get_by_role("button", name="Insights",             exact=False)
         self.nav_organizations        = page.get_by_role("button", name="Organizations",        exact=False)
         self.nav_report_registrations = page.get_by_role("button", name="Report Registrations", exact=False)
-        self.user_menu                = page.get_by_role("button", name="Signed in as Test User")
+        self.user_menu                = page.get_by_role("button", name="Signed in as", exact=False)
         self.privacy_policy           = page.get_by_role("link",   name="Privacy Policy")
         self.terms                    = page.get_by_role("link",   name="Terms & Conditions")
         self.report_iframe            = page.locator("iframe").first

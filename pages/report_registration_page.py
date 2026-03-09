@@ -13,6 +13,8 @@ class ReportRegistrationPage(BasePage):
         self.next_page_btn  = page.get_by_role("button", name="Go to next page")
         self.prev_page_btn  = page.get_by_role("button", name="Go to previous page")
 
+        self.page_heading   = page.get_by_role("heading", name="Report Registration")
+
     def _dialog(self) -> Locator:
         return self.page.get_by_role("dialog")
 
@@ -118,3 +120,9 @@ class ReportRegistrationPage(BasePage):
 
     def verify_search_result(self, report_name: str):
         expect(self.page.get_by_text(report_name).first).to_be_visible()
+
+    def verify_heading_visible(self):
+        expect(self.page_heading).to_be_visible()
+
+    def verify_heading_not_visible(self):
+        expect(self.page_heading).not_to_be_visible()

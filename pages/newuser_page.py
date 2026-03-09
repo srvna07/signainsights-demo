@@ -37,6 +37,8 @@ class NewUserPage(BasePage):
         self.update_success_message   = page.get_by_text("User updated successfully")
         self.delete_success_message   = page.get_by_text("User deleted successfully")
 
+        self.page_heading             = page.get_by_role("heading", name="User Management")
+
     def open_form(self):
         self.user_management_btn.click()
         self.new_user_btn.click()
@@ -167,3 +169,9 @@ class NewUserPage(BasePage):
 
     def verify_report_not_visible(self, report_name: str):
         expect(self.page.get_by_role("option", name=report_name)).not_to_be_visible()
+
+    def verify_heading_visible(self):
+        expect(self.page_heading).to_be_visible()
+
+    def verify_heading_not_visible(self):
+        expect(self.page_heading).not_to_be_visible()

@@ -20,8 +20,9 @@ logger = get_logger(__name__)
 ENV    = get_env()
 config = DataReader.load_yaml(f"configs/{ENV}.yaml")
 
-AUTH_STATE_FILE       = Path("test-results/.auth/state.json")
-SIGNA_AUTH_STATE_FILE = Path("test-results/.auth/signa_state.json")
+AUTH_STATE_FILE          = Path("test-results/.auth/state.json")
+SIGNA_AUTH_STATE_FILE    = Path("test-results/.auth/signa_state.json")
+ORG_USER_AUTH_STATE_FILE = Path("test-results/.auth/org_user_state.json")
 
 
 @pytest.fixture(scope="session")
@@ -74,6 +75,15 @@ def super_admin_credentials():
 
 
 @pytest.fixture(scope="session")
+def org_user_credentials():
+    username = os.getenv("ORG_USER_USERNAME")
+    password = os.getenv("ORG_USER_PASSWORD")
+    if not username or not password:
+        pytest.exit("ORG_USER_USERNAME / ORG_USER_PASSWORD not set. Check your .env file.", returncode=1)
+    return {"username": username, "password": password}
+
+
+@pytest.fixture(scope="session")
 def registered_email():
     email = os.getenv("REGISTERED_EMAIL")
     if not email:
@@ -81,11 +91,12 @@ def registered_email():
     return email
 
 
-# Login once per session and save auth state for main and signa users
+# Login once per session and save auth state for admin, signa, and org user
 @pytest.fixture(scope="session", autouse=True)
-def setup_auth(browser: Browser, credentials, signa_credentials):
+def setup_auth(browser: Browser, credentials, signa_credentials, org_user_credentials):
     AUTH_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
+    # ── Admin user ──────────────────────────────────────────────────────
     context = browser.new_context(no_viewport=True)
     pg = context.new_page()
     pg.set_default_timeout(config["default_timeout"])
@@ -98,6 +109,7 @@ def setup_auth(browser: Browser, credentials, signa_credentials):
     context.close()
     logger.info(f"Auth state saved → {AUTH_STATE_FILE}")
 
+    # ── Signa user ──────────────────────────────────────────────────────
     signa_context = browser.new_context(no_viewport=True)
     signa_pg = signa_context.new_page()
     signa_pg.set_default_timeout(config["default_timeout"])
@@ -110,8 +122,21 @@ def setup_auth(browser: Browser, credentials, signa_credentials):
     signa_context.close()
     logger.info(f"Signa auth state saved → {SIGNA_AUTH_STATE_FILE}")
 
+    # ── Org user ────────────────────────────────────────────────────────
+    org_user_context = browser.new_context(no_viewport=True)
+    org_user_pg = org_user_context.new_page()
+    org_user_pg.set_default_timeout(config["default_timeout"])
+    org_user_pg.set_default_navigation_timeout(config["navigation_timeout"])
+    org_user_login = LoginPage(org_user_pg)
+    org_user_login.navigate(config["base_url"])
+    org_user_login.login(org_user_credentials["username"], org_user_credentials["password"])
+    org_user_pg.wait_for_url("**/dashboard")
+    org_user_context.storage_state(path=str(ORG_USER_AUTH_STATE_FILE))
+    org_user_context.close()
+    logger.info(f"Org user auth state saved → {ORG_USER_AUTH_STATE_FILE}")
 
-# Fresh authenticated page per test using saved auth state
+
+# Fresh authenticated page per test using saved admin auth state
 @pytest.fixture
 def authenticated_page(page: Page):
     page.set_default_timeout(config["default_timeout"])
@@ -139,6 +164,28 @@ def signa_page(browser: Browser):
     output_dir = Path("test-results")
     output_dir.mkdir(parents=True, exist_ok=True)
     context.tracing.stop(path=str(output_dir / "signa-trace.zip"))
+    context.close()
+
+
+# Fresh org user page per test with its own browser context
+@pytest.fixture
+def org_user_page(browser: Browser):
+    context = browser.new_context(
+        no_viewport=True,
+        storage_state=str(ORG_USER_AUTH_STATE_FILE),
+        record_video_size=config.get("record_video_size", {"width": 1280, "height": 720}),
+    )
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+    pg = context.new_page()
+    pg.set_default_timeout(config["default_timeout"])
+    pg.set_default_navigation_timeout(config["navigation_timeout"])
+    pg.goto(config["base_url"] + "/dashboard")
+
+    yield pg
+
+    output_dir = Path("test-results")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    context.tracing.stop(path=str(output_dir / "org-user-trace.zip"))
     context.close()
 
 
@@ -207,13 +254,17 @@ def update_organization_data():
     return DataReader.load_yaml("testdata/update_organization.yaml")
 
 
-# Captures screenshot on test failure for authenticated_page and signa_page
+# Captures screenshot on test failure for authenticated_page, signa_page, and org_user_page
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     rep     = outcome.get_result()
     if rep.when == "call" and rep.failed:
-        pg = item.funcargs.get("authenticated_page") or item.funcargs.get("signa_page")
+        pg = (
+            item.funcargs.get("authenticated_page")
+            or item.funcargs.get("signa_page")
+            or item.funcargs.get("org_user_page")
+        )
         if pg:
             screenshots_dir = Path(__file__).parent / "screenshots"
             screenshots_dir.mkdir(exist_ok=True)
