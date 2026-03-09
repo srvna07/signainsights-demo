@@ -39,6 +39,11 @@ def org_user_orgs_page(org_user_page):
 def org_user_report_page(org_user_page):
     return ReportRegistrationPage(org_user_page)
 
+
+# ===========================================================================
+# REQUIREMENT 1 — Org User has access ONLY to their own account
+# ===========================================================================
+
 # Verify org user can access the dashboard and Dashboard heading is visible
 @pytest.mark.high
 def test_org_user_can_access_dashboard(org_user_landing_page, config_fixture):
@@ -81,43 +86,32 @@ def test_org_user_blocked_from_report_registration_route(org_user_report_page, c
     org_user_report_page.page.wait_for_load_state("domcontentloaded")
     org_user_report_page.verify_heading_not_visible()
 
+
+# ===========================================================================
+# REQUIREMENT 2 — Org User can be assigned to multiple organizations
+# ===========================================================================
+
 # Verify primary organization appears in org user's org switcher
 @pytest.mark.high
-def test_org_user_primary_org_visible_in_switcher(org_user_page, org_user_data):
-    primary      = org_user_data["org_user_multi"]["organization"]
-    org_switcher = org_user_page.get_by_role("combobox")
-    org_switcher.click()
-    expect(org_user_page.get_by_role("listbox")).to_be_visible()
-    expect(org_user_page.get_by_role("option", name=primary)).to_be_visible()
-    org_user_page.keyboard.press("Escape")
+def test_org_user_primary_org_visible_in_switcher(org_user_landing_page, org_user_data):
+    primary = org_user_data["org_user_multi"]["organization"]
+    org_user_landing_page.verify_org_visible_in_switcher(primary)
 
 
 # Verify all secondary organizations appear in org user's org switcher
 @pytest.mark.high
-def test_org_user_secondary_orgs_visible_in_switcher(org_user_page, org_user_data):
+def test_org_user_secondary_orgs_visible_in_switcher(org_user_landing_page, org_user_data):
     secondary_orgs = org_user_data["org_user_multi"]["secondaryOrganizations"]
-    org_switcher   = org_user_page.get_by_role("combobox")
-    org_switcher.click()
-    expect(org_user_page.get_by_role("listbox")).to_be_visible()
-    for org in secondary_orgs:
-        expect(org_user_page.get_by_role("option", name=org)).to_be_visible()
-    org_user_page.keyboard.press("Escape")
+    org_user_landing_page.verify_orgs_visible_in_switcher(secondary_orgs)
 
 
 # Verify org user can switch between all assigned organizations
 @pytest.mark.medium
-def test_org_user_can_switch_between_organizations(org_user_page, org_user_data):
-    u            = org_user_data["org_user_multi"]
-    org_switcher = org_user_page.get_by_role("combobox")
+def test_org_user_can_switch_between_organizations(org_user_landing_page, org_user_data):
+    u = org_user_data["org_user_multi"]
 
     for org in u["secondaryOrganizations"]:
-        org_switcher.click()
-        expect(org_user_page.get_by_role("listbox")).to_be_visible()
-        org_user_page.get_by_role("option", name=org).click()
-        org_user_page.wait_for_load_state("domcontentloaded")
+        org_user_landing_page.switch_organization(org)
 
     # Switch back to primary org
-    org_switcher.click()
-    expect(org_user_page.get_by_role("listbox")).to_be_visible()
-    org_user_page.get_by_role("option", name=u["organization"]).click()
-    org_user_page.wait_for_load_state("domcontentloaded")
+    org_user_landing_page.switch_organization(u["organization"])

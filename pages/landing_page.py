@@ -6,7 +6,7 @@ class LandingPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
-        self.user_menu_button         = page.get_by_role("button", name="Signed in as", exact=False)
+        self.user_menu_button         = page.get_by_role("button", name="Signed in as Test User")
         self.logout_menu_item         = page.get_by_role("menuitem", name="Logout")
         self.logout_confirm_button    = page.get_by_role("button", name="Logout")
         self.nav_dashboard            = page.get_by_role("button", name="Dashboard",            exact=False)
@@ -16,6 +16,11 @@ class LandingPage(BasePage):
         self.nav_report_registrations = page.get_by_role("button", name="Report Registrations", exact=False)
         self.privacy_policy_link      = page.get_by_role("link", name="Privacy Policy")
         self.terms_link               = page.get_by_role("link", name="Terms & Conditions")
+
+        self.page_heading             = page.get_by_role("heading", name="Dashboard")
+
+        self.org_switcher             = page.get_by_role("combobox")
+        self.org_listbox              = page.get_by_role("listbox")
 
     def navigate(self, base_url: str):
         self.navigate_to(f"{base_url.rstrip('/')}/dashboard")
@@ -40,3 +45,28 @@ class LandingPage(BasePage):
 
     def verify_url_contains(self, text: str):
         self.assert_url_contains(text)
+
+    def verify_heading_visible(self):
+        expect(self.page_heading).to_be_visible()
+
+    def verify_heading_not_visible(self):
+        expect(self.page_heading).not_to_be_visible()
+
+    def verify_org_visible_in_switcher(self, org_name: str):
+        self.org_switcher.click()
+        expect(self.org_listbox).to_be_visible()
+        expect(self.page.get_by_role("option", name=org_name)).to_be_visible()
+        self.page.keyboard.press("Escape")
+
+    def verify_orgs_visible_in_switcher(self, org_names: list):
+        self.org_switcher.click()
+        expect(self.org_listbox).to_be_visible()
+        for org in org_names:
+            expect(self.page.get_by_role("option", name=org)).to_be_visible()
+        self.page.keyboard.press("Escape")
+
+    def switch_organization(self, org_name: str):
+        self.org_switcher.click()
+        expect(self.org_listbox).to_be_visible()
+        self.page.get_by_role("option", name=org_name).click()
+        self.page.wait_for_load_state("domcontentloaded")
