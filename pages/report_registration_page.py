@@ -90,7 +90,7 @@ class ReportRegistrationPage(BasePage):
 
     def create_report(self, report_name: str, menu_name: str, workspace_id: str,
                       report_id: str, dataset_id: str, organization: str, roles: list = None):
-        self.navigate_to()
+        self.navigate_to_report_registration()
         self.click_new_report()
         self.fill_report_name(report_name)
         self.fill_menu(menu_name)

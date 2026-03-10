@@ -147,7 +147,7 @@ def test_signa_user_edit_organization(signa_orgs_page, signa_org_name, update_or
 # Verify report can be edited by signa user
 @pytest.mark.medium
 def test_signa_user_edit_report(signa_reports_page, signa_report_data):
-    signa_reports_page.navigate_to()
+    signa_reports_page.navigate_to_report_registration()
     signa_reports_page.edit_report(
         report_name=signa_report_data["report_name"],
         new_name=signa_report_data["edit_name"],
@@ -174,7 +174,7 @@ def test_signa_user_edit_user(signa_users_page, signa_user_names, update_user_da
 # Verify report can be deleted by signa user
 @pytest.mark.medium
 def test_signa_user_delete_report(signa_reports_page, signa_report_data):
-    signa_reports_page.navigate_to()
+    signa_reports_page.navigate_to_report_registration()
     signa_reports_page.delete_report(signa_report_data["edit_name"])
     signa_reports_page.verify_report_not_visible(signa_report_data["edit_name"])
 
