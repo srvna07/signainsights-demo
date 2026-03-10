@@ -20,9 +20,10 @@ logger = get_logger(__name__)
 ENV    = get_env()
 config = DataReader.load_yaml(f"configs/{ENV}.yaml")
 
-AUTH_STATE_FILE          = Path("test-results/.auth/state.json")
-SIGNA_AUTH_STATE_FILE    = Path("test-results/.auth/signa_state.json")
-ORG_USER_AUTH_STATE_FILE = Path("test-results/.auth/org_user_state.json")
+AUTH_STATE_FILE           = Path("test-results/.auth/state.json")
+SIGNA_AUTH_STATE_FILE     = Path("test-results/.auth/signa_state.json")
+ORG_USER_AUTH_STATE_FILE  = Path("test-results/.auth/org_user_state.json")
+ORG_ADMIN_AUTH_STATE_FILE = Path("test-results/.auth/org_admin_state.json")
 
 
 @pytest.fixture(scope="session")
@@ -84,6 +85,15 @@ def org_user_credentials():
 
 
 @pytest.fixture(scope="session")
+def org_admin_credentials():
+    username = os.getenv("ORG_ADMIN_USERNAME")
+    password = os.getenv("ORG_ADMIN_PASSWORD")
+    if not username or not password:
+        pytest.exit("ORG_ADMIN_USERNAME / ORG_ADMIN_PASSWORD not set. Check your .env file.", returncode=1)
+    return {"username": username, "password": password}
+
+
+@pytest.fixture(scope="session")
 def registered_email():
     email = os.getenv("REGISTERED_EMAIL")
     if not email:
@@ -91,9 +101,9 @@ def registered_email():
     return email
 
 
-# Login once per session and save auth state for admin, signa, and org user
+# Login once per session and save auth state for admin, signa, org user, and org admin
 @pytest.fixture(scope="session", autouse=True)
-def setup_auth(browser: Browser, credentials, signa_credentials, org_user_credentials):
+def setup_auth(browser: Browser, credentials, signa_credentials, org_user_credentials, org_admin_credentials):
     AUTH_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
     # ── Admin user ──────────────────────────────────────────────────────
@@ -134,6 +144,19 @@ def setup_auth(browser: Browser, credentials, signa_credentials, org_user_creden
     org_user_context.storage_state(path=str(ORG_USER_AUTH_STATE_FILE))
     org_user_context.close()
     logger.info(f"Org user auth state saved → {ORG_USER_AUTH_STATE_FILE}")
+
+    # ── Org admin ───────────────────────────────────────────────────────
+    org_admin_context = browser.new_context(no_viewport=True)
+    org_admin_pg = org_admin_context.new_page()
+    org_admin_pg.set_default_timeout(config["default_timeout"])
+    org_admin_pg.set_default_navigation_timeout(config["navigation_timeout"])
+    org_admin_login = LoginPage(org_admin_pg)
+    org_admin_login.navigate(config["base_url"])
+    org_admin_login.login(org_admin_credentials["username"], org_admin_credentials["password"])
+    org_admin_pg.wait_for_url("**/dashboard")
+    org_admin_context.storage_state(path=str(ORG_ADMIN_AUTH_STATE_FILE))
+    org_admin_context.close()
+    logger.info(f"Org admin auth state saved → {ORG_ADMIN_AUTH_STATE_FILE}")
 
 
 # Fresh authenticated page per test using saved admin auth state
@@ -186,6 +209,28 @@ def org_user_page(browser: Browser):
     output_dir = Path("test-results")
     output_dir.mkdir(parents=True, exist_ok=True)
     context.tracing.stop(path=str(output_dir / "org-user-trace.zip"))
+    context.close()
+
+
+# Fresh org admin page per test with its own browser context
+@pytest.fixture
+def org_admin_page(browser: Browser):
+    context = browser.new_context(
+        no_viewport=True,
+        storage_state=str(ORG_ADMIN_AUTH_STATE_FILE),
+        record_video_size=config.get("record_video_size", {"width": 1280, "height": 720}),
+    )
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+    pg = context.new_page()
+    pg.set_default_timeout(config["default_timeout"])
+    pg.set_default_navigation_timeout(config["navigation_timeout"])
+    pg.goto(config["base_url"] + "/dashboard")
+
+    yield pg
+
+    output_dir = Path("test-results")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    context.tracing.stop(path=str(output_dir / "org-admin-trace.zip"))
     context.close()
 
 
@@ -264,6 +309,7 @@ def pytest_runtest_makereport(item, call):
             item.funcargs.get("authenticated_page")
             or item.funcargs.get("signa_page")
             or item.funcargs.get("org_user_page")
+            or item.funcargs.get("org_admin_page")
         )
         if pg:
             screenshots_dir = Path(__file__).parent / "screenshots"

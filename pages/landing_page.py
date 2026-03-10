@@ -52,7 +52,19 @@ class LandingPage(BasePage):
     def verify_heading_not_visible(self):
         expect(self.page_heading).not_to_be_visible()
 
-    def verify_org_visible_in_switcher(self, org_name: str):
+    def navigate_to_insights(self):
+        self.nav_insights.click()
+        self.page.wait_for_load_state("domcontentloaded")
+        self.assert_url_contains("/insights")
+
+    def insights_accessible(self):
+        self.nav_insights.click()
+
+    def verify_insights_accessible(self):
+        expect(self.nav_insights).to_be_visible()
+
+    def verify_nav_not_visible(self, org_name):
+        expect(self.nav_user_management).not_to_be_visible()
         self.org_switcher.click()
         expect(self.org_listbox).to_be_visible()
         expect(self.page.get_by_role("option", name=org_name)).to_be_visible()

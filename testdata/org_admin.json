@@ -1,0 +1,37 @@
+{
+  "primary_organization": "SignaTech",
+  "secondary_organizations": [
+    "SignaInsightsDemo",
+    "TFL-Memphis"
+  ],
+  "org_user_to_create": {
+    "firstName": "OrgAdmin",
+    "lastName": "Created",
+    "usernamePrefix": "test_oadmin_created_",
+    "emailDomain": "@gmail.com",
+    "role": "Admin",
+    "userType": "Organization User",
+    "contact": {
+      "dob": "2026-02-13",
+      "phone": "+91 79042-86161",
+      "address1": "Test",
+      "address2": "Test",
+      "country": "Test",
+      "city": "Test",
+      "state": "Test",
+      "zipCode": "606201"
+    }
+  },
+  "reports_assigned": [
+    "SignaTech - Profit and Loss"
+  ],
+  "signa_username": "signauser",
+  "restricted_user_types": [
+    "Super Admin",
+    "Signa User"
+  ],
+  "allowed_user_types": [
+    "Organization Admin",
+    "Organization User"
+  ]
+}

@@ -175,3 +175,25 @@ class NewUserPage(BasePage):
 
     def verify_heading_not_visible(self):
         expect(self.page_heading).not_to_be_visible()
+
+    def verify_nav_not_visible(self):
+        expect(self.user_management_btn).not_to_be_visible()
+
+    def verify_user_type_option_visible(self, user_type: str):
+        self.user_type_dropdown.click()
+        expect(self.page.get_by_role("option", name=user_type, exact=True)).to_be_visible()
+        self.page.keyboard.press("Escape")
+
+    def verify_user_type_option_not_visible(self, user_type: str):
+        self.user_type_dropdown.click()
+        expect(self.page.get_by_role("option", name=user_type, exact=True)).not_to_be_visible()
+        self.page.keyboard.press("Escape")
+
+    def verify_organization_options_visible(self, org_names: list):
+        self.organization_dropdown.click()
+        for org in org_names:
+            expect(self.page.get_by_role("option", name=org, exact=True)).to_be_visible()
+        self.page.keyboard.press("Escape")
+
+    def cancel_form(self):
+        self.page.get_by_role("button", name="Cancel").click()

@@ -6,7 +6,7 @@ class ReportRegistrationPage(BasePage):
 
     def __init__(self, page: Page):
         super().__init__(page)
-        self.nav_btn        = page.get_by_role("button", name=" Report Registrations")
+        self.report_registration        = page.get_by_role("button", name=" Report Registrations")
         self.new_report_btn = page.get_by_role("button", name="New Report")
         self.search_input   = page.get_by_placeholder("Search")
         self.rows_per_page  = page.get_by_role("combobox", name="Rows per page:")
@@ -21,8 +21,8 @@ class ReportRegistrationPage(BasePage):
     def _row(self, report_name: str) -> Locator:
         return self.page.get_by_role("row", name=report_name)
 
-    def navigate_to(self):
-        self.nav_btn.click()
+    def navigate_to_report_registration(self):
+        self.report_registration.click()
 
     def search(self, report_name: str):
         self.search_input.fill(report_name)
@@ -126,3 +126,6 @@ class ReportRegistrationPage(BasePage):
 
     def verify_heading_not_visible(self):
         expect(self.page_heading).not_to_be_visible()
+
+    def verify_nav_not_visible(self):
+        expect(self.report_registration).not_to_be_visible()
