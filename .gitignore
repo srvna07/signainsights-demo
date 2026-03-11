@@ -11,6 +11,8 @@ __pycache__/
 # Test output
 screenshots/
 reports/
+test-results/
+.tmp-video/
 
 # Configuration and credentials
 .env
