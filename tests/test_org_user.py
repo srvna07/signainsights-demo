@@ -95,7 +95,7 @@ def test_org_user_blocked_from_report_registration_route(org_user_report_page, c
 @pytest.mark.high
 def test_org_user_primary_org_visible_in_switcher(org_user_landing_page, org_user_data):
     primary = org_user_data["org_user_multi"]["organization"]
-    org_user_landing_page.verify_org_visible_in_switcher(primary)
+    org_user_landing_page.verify_orgs_visible_in_switcher([primary])
 
 
 # Verify all secondary organizations appear in org user's org switcher

@@ -29,7 +29,7 @@ def created_reports(report_registration_page, report_registration_data, created_
     base_report = report_registration_data["new_report"]
     report_map  = {}
 
-    report_registration_page.navigate_to()
+    report_registration_page.navigate_to_report_registration()
 
     for i, org_name in enumerate(created_orgs):
         unique      = uuid.uuid4().hex[:4]

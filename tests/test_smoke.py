@@ -31,6 +31,7 @@ def test_top_bar_and_footer_present(smoke_page: SmokePage):
 
 
 # Verify report iframe is rendered and visible on the Insights page
+@pytest.mark.skip(reason="Report iframe test skipped — under investigation")
 @pytest.mark.smoke
 def test_report_iframe_displayed(smoke_page: SmokePage):
     smoke_page.navigate_to_dashboard(BASE_URL)

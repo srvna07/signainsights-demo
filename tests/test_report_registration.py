@@ -40,7 +40,7 @@ def test_edit_report_success(report_registration_page, report_registration_data)
     new_report  = report_registration_data["new_report"]
     edit_report = report_registration_data["edit_report"]
 
-    report_registration_page.navigate_to()
+    report_registration_page.navigate_to_report_registration()
     report_registration_page.edit_report(
         report_name=new_report["report_name"],
         new_name=edit_report["report_name"],
@@ -55,7 +55,7 @@ def test_edit_report_success(report_registration_page, report_registration_data)
 def test_search_report_returns_expected_result(report_registration_page, report_registration_data):
     report_name = report_registration_data["edit_report"]["report_name"]
 
-    report_registration_page.navigate_to()
+    report_registration_page.navigate_to_report_registration()
     report_registration_page.search(report_name)
     report_registration_page.verify_search_result(report_name)
     report_registration_page.clear_search()
@@ -64,7 +64,7 @@ def test_search_report_returns_expected_result(report_registration_page, report_
 # Verify table displays maximum 5 rows per page
 @pytest.mark.low
 def test_rows_per_page_5(authenticated_page, report_registration_page):
-    report_registration_page.navigate_to()
+    report_registration_page.navigate_to_report_registration()
     report_registration_page.set_rows_per_page(5)
     rows = authenticated_page.locator("table tbody tr")
     expect(rows.first).to_be_visible()
@@ -74,7 +74,7 @@ def test_rows_per_page_5(authenticated_page, report_registration_page):
 # Verify table displays maximum 25 rows per page
 @pytest.mark.low
 def test_rows_per_page_25(authenticated_page, report_registration_page):
-    report_registration_page.navigate_to()
+    report_registration_page.navigate_to_report_registration()
     report_registration_page.set_rows_per_page(25)
     rows = authenticated_page.locator("table tbody tr")
     assert rows.count() <= 25
@@ -85,7 +85,7 @@ def test_rows_per_page_25(authenticated_page, report_registration_page):
 def test_delete_report_success(report_registration_page, report_registration_data):
     report_name = report_registration_data["edit_report"]["report_name"]
 
-    report_registration_page.navigate_to()
+    report_registration_page.navigate_to_report_registration()
     report_registration_page.delete_report(report_name)
     report_registration_page.verify_report_not_visible(report_name)
 

@@ -4,7 +4,7 @@ import pytest
 # Step 1: runs sequentially before parallel — token + smoke must pass to continue
 pre_suite = [
     "tests/test_get_token.py",
-    # "tests/test_smoke.py",
+    "tests/test_smoke.py",
     "tests/test_get_data_ids_delete.py",
 ]
 
@@ -19,8 +19,8 @@ parallel_suite = [
     "tests/test_reportvisibilityRBAC.py",
     "tests/test_super_admin.py",
     "tests/test_signa_user.py",
-    # "tests/test_org_user.py",
-    # "tests/test_org_admin.py",
+    "tests/test_org_user.py",
+    "tests/test_org_admin.py",
 
 ]
 
@@ -46,11 +46,11 @@ def main():
     if exit_code != 0:
         print("\n[Aborted] Parallel suite failed. Skipping cleanup phase.")
         sys.exit(exit_code)
-
-    # --- Phase 3: sequential post-run (cleanup) ---
-    print("\n[Phase 3] Running post-suite sequentially (cleanup)...")
-    exit_code = pytest.main(["-v", *cli_args, *post_suite])
-    sys.exit(exit_code)
+    #
+    # # --- Phase 3: sequential post-run (cleanup) ---
+    # print("\n[Phase 3] Running post-suite sequentially (cleanup)...")
+    # exit_code = pytest.main(["-v", *cli_args, *post_suite])
+    # sys.exit(exit_code)
 
 
 if __name__ == "__main__":
