@@ -46,11 +46,11 @@ def main():
     if exit_code != 0:
         print("\n[Aborted] Parallel suite failed. Skipping cleanup phase.")
         sys.exit(exit_code)
-    #
-    # # --- Phase 3: sequential post-run (cleanup) ---
-    # print("\n[Phase 3] Running post-suite sequentially (cleanup)...")
-    # exit_code = pytest.main(["-v", *cli_args, *post_suite])
-    # sys.exit(exit_code)
+
+    # --- Phase 3: sequential post-run (cleanup) ---
+    print("\n[Phase 3] Running post-suite sequentially (cleanup)...")
+    exit_code = pytest.main(["-v", *cli_args, *post_suite])
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":
