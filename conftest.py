@@ -25,6 +25,8 @@ SIGNA_AUTH_STATE_FILE     = Path("test-results/.auth/signa_state.json")
 ORG_USER_AUTH_STATE_FILE  = Path("test-results/.auth/org_user_state.json")
 ORG_ADMIN_AUTH_STATE_FILE = Path("test-results/.auth/org_admin_state.json")
 
+_failed_key = pytest.StashKey()
+
 
 @pytest.fixture(scope="session")
 def browser_type_launch_args(browser_type_launch_args):
@@ -101,12 +103,10 @@ def registered_email():
     return email
 
 
-# Login once per session and save auth state for admin, signa, org user, and org admin
 @pytest.fixture(scope="session", autouse=True)
 def setup_auth(browser: Browser, credentials, signa_credentials, org_user_credentials, org_admin_credentials):
     AUTH_STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
 
-    # ── Admin user ──────────────────────────────────────────────────────
     context = browser.new_context(no_viewport=True)
     pg = context.new_page()
     pg.set_default_timeout(config["default_timeout"])
@@ -119,7 +119,6 @@ def setup_auth(browser: Browser, credentials, signa_credentials, org_user_creden
     context.close()
     logger.info(f"Auth state saved → {AUTH_STATE_FILE}")
 
-    # ── Signa user ──────────────────────────────────────────────────────
     signa_context = browser.new_context(no_viewport=True)
     signa_pg = signa_context.new_page()
     signa_pg.set_default_timeout(config["default_timeout"])
@@ -132,7 +131,6 @@ def setup_auth(browser: Browser, credentials, signa_credentials, org_user_creden
     signa_context.close()
     logger.info(f"Signa auth state saved → {SIGNA_AUTH_STATE_FILE}")
 
-    # ── Org user ────────────────────────────────────────────────────────
     org_user_context = browser.new_context(no_viewport=True)
     org_user_pg = org_user_context.new_page()
     org_user_pg.set_default_timeout(config["default_timeout"])
@@ -145,7 +143,6 @@ def setup_auth(browser: Browser, credentials, signa_credentials, org_user_creden
     org_user_context.close()
     logger.info(f"Org user auth state saved → {ORG_USER_AUTH_STATE_FILE}")
 
-    # ── Org admin ───────────────────────────────────────────────────────
     org_admin_context = browser.new_context(no_viewport=True)
     org_admin_pg = org_admin_context.new_page()
     org_admin_pg.set_default_timeout(config["default_timeout"])
@@ -159,7 +156,37 @@ def setup_auth(browser: Browser, credentials, signa_credentials, org_user_creden
     logger.info(f"Org admin auth state saved → {ORG_ADMIN_AUTH_STATE_FILE}")
 
 
-# Fresh authenticated page per test using saved admin auth state
+def _safe_name(request) -> str:
+    return (
+        request.node.name
+        .replace("/", "_").replace("\\", "_")
+        .replace("[", "_").replace("]", "_")
+        .replace(" ", "_")
+    )
+
+
+def _teardown(context, pg, request, prefix: str):
+    failed    = request.node.stash.get(_failed_key, False)
+    test_name = _safe_name(request)
+    if failed:
+        failure_dir = Path(f"test-results/failures/{prefix}-{test_name}")
+        failure_dir.mkdir(parents=True, exist_ok=True)
+        # Save trace
+        context.tracing.stop(path=str(failure_dir / "trace.zip"))
+        # Save screenshot
+        pg.screenshot(path=str(failure_dir / "screenshot.png"), full_page=True)
+        # Save video — must close context first, then move
+        context.close()
+        if pg.video:
+            pg.video.save_as(str(failure_dir / "video.webm"))
+        print(f"\n Failure artifacts → {failure_dir}")
+    else:
+        context.tracing.stop()
+        context.close()
+        if pg.video:
+            pg.video.delete()
+
+
 @pytest.fixture
 def authenticated_page(page: Page):
     page.set_default_timeout(config["default_timeout"])
@@ -168,12 +195,12 @@ def authenticated_page(page: Page):
     return page
 
 
-# Fresh signa user page per test with its own browser context
 @pytest.fixture
-def signa_page(browser: Browser):
+def signa_page(browser: Browser, request):
     context = browser.new_context(
         no_viewport=True,
         storage_state=str(SIGNA_AUTH_STATE_FILE),
+        record_video_dir="test-results/.tmp-video/signa",
         record_video_size=config.get("record_video_size", {"width": 1280, "height": 720}),
     )
     context.tracing.start(screenshots=True, snapshots=True, sources=True)
@@ -181,21 +208,16 @@ def signa_page(browser: Browser):
     pg.set_default_timeout(config["default_timeout"])
     pg.set_default_navigation_timeout(config["navigation_timeout"])
     pg.goto(config["base_url"] + "/user-management")
-
     yield pg
-
-    output_dir = Path("test-results")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    context.tracing.stop(path=str(output_dir / "signa-trace.zip"))
-    context.close()
+    _teardown(context, pg, request, "signa")
 
 
-# Fresh org user page per test with its own browser context
 @pytest.fixture
-def org_user_page(browser: Browser):
+def org_user_page(browser: Browser, request):
     context = browser.new_context(
         no_viewport=True,
         storage_state=str(ORG_USER_AUTH_STATE_FILE),
+        record_video_dir="test-results/.tmp-video/org-user",
         record_video_size=config.get("record_video_size", {"width": 1280, "height": 720}),
     )
     context.tracing.start(screenshots=True, snapshots=True, sources=True)
@@ -203,21 +225,16 @@ def org_user_page(browser: Browser):
     pg.set_default_timeout(config["default_timeout"])
     pg.set_default_navigation_timeout(config["navigation_timeout"])
     pg.goto(config["base_url"] + "/dashboard")
-
     yield pg
-
-    output_dir = Path("test-results")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    context.tracing.stop(path=str(output_dir / "org-user-trace.zip"))
-    context.close()
+    _teardown(context, pg, request, "org-user")
 
 
-# Fresh org admin page per test with its own browser context
 @pytest.fixture
-def org_admin_page(browser: Browser):
+def org_admin_page(browser: Browser, request):
     context = browser.new_context(
         no_viewport=True,
         storage_state=str(ORG_ADMIN_AUTH_STATE_FILE),
+        record_video_dir="test-results/.tmp-video/org-admin",
         record_video_size=config.get("record_video_size", {"width": 1280, "height": 720}),
     )
     context.tracing.start(screenshots=True, snapshots=True, sources=True)
@@ -225,13 +242,8 @@ def org_admin_page(browser: Browser):
     pg.set_default_timeout(config["default_timeout"])
     pg.set_default_navigation_timeout(config["navigation_timeout"])
     pg.goto(config["base_url"] + "/dashboard")
-
     yield pg
-
-    output_dir = Path("test-results")
-    output_dir.mkdir(parents=True, exist_ok=True)
-    context.tracing.stop(path=str(output_dir / "org-admin-trace.zip"))
-    context.close()
+    _teardown(context, pg, request, "org-admin")
 
 
 @pytest.fixture
@@ -299,22 +311,9 @@ def update_organization_data():
     return DataReader.load_yaml("testdata/update_organization.yaml")
 
 
-# Captures screenshot on test failure for authenticated_page, signa_page, and org_user_page
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     rep     = outcome.get_result()
-    if rep.when == "call" and rep.failed:
-        pg = (
-            item.funcargs.get("authenticated_page")
-            or item.funcargs.get("signa_page")
-            or item.funcargs.get("org_user_page")
-            or item.funcargs.get("org_admin_page")
-        )
-        if pg:
-            screenshots_dir = Path(__file__).parent / "screenshots"
-            screenshots_dir.mkdir(exist_ok=True)
-            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            filename  = f"{item.name.replace('/', '_')}_{timestamp}.png"
-            pg.screenshot(path=str(screenshots_dir / filename), full_page=True)
-            print(f"\n Screenshot: {filename}")
+    if rep.when == "call":
+        item.stash[_failed_key] = rep.failed
